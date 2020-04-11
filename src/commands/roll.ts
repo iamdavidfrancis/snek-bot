@@ -48,7 +48,15 @@ export default class DiceRoller {
             returnValue.addField(`${element.numDice}d${element.diceSides} Results:`, resultString);
         });
 
-        const finalString = totalElements.join(" + ") + " = " + totalSum;
+        let finalString;
+
+        if (totalElements.length > 1) {
+            finalString = totalElements.join(" + ") + " = " + totalSum;
+        }
+        else {
+            finalString = totalSum;
+        }
+        
         returnValue.addField("Total Dice Roll", finalString);
 
         return returnValue;
