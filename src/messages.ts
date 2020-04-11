@@ -1,6 +1,8 @@
 import Config from "./config";
 import Discord from "discord.js";
 
+import DiceRoller from './commands/roll';
+
 
 type CommandHandler = (cmd: string, args: Array<string>) => Message | Discord.MessageEmbed;
 
@@ -16,6 +18,17 @@ export interface Command {
 }
 
 export default class Messages {
+
+    constructor() {
+        var diceRoller = new DiceRoller();
+
+        this.commandList[DiceRoller.commandCode] = {
+            commandCode: DiceRoller.commandCode,
+            description: DiceRoller.description,
+            usage: DiceRoller.usage,
+            handler: diceRoller.handler
+        };
+    }
 
     public handleCommand(cmd: string, args: Array<string>): Message | Discord.MessageEmbed | undefined {
         if (this.commandList[cmd]) {
@@ -49,7 +62,7 @@ export default class Messages {
             const value = this.commandList[key];
             let description = value.description;
             if (value.usage) {
-                description += `\nUsage: ${value.usage}`;
+                description += `\nUsage: \`${value.usage}\``;
             }
 
             fields.push({
