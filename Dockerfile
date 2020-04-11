@@ -12,6 +12,7 @@ RUN cd /tmp && npm install --loglevel=warn \
 
 COPY src $APP/src
 COPY package.json $APP
+COPY tsconfig.json $APP
 
 WORKDIR $APP
 
