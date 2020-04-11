@@ -15,6 +15,7 @@ variables:
   containerRegistry: 'dafranctest.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
+  latestTag: 'latest'
   
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -36,5 +37,5 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          'latest'
+          $(latestTag)
           $(tag)
