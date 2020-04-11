@@ -15,4 +15,6 @@ COPY package.json $APP
 
 WORKDIR $APP
 
-CMD [ "node", "src/main.js" ]
+RUN npm run build
+
+CMD [ "node", "dist/index.js" ]
