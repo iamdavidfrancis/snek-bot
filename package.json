@@ -1,7 +1,11 @@
 {
-  "name": "discord-bot",
+  "name": "snek-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A bot for the snek discord server.",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/iamdavidfrancis/snek-bot.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
