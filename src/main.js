@@ -20,6 +20,8 @@ client.on('ready', () => {
     logger.info('Connected');
     logger.info(`Logged in as: ${client.user.tag}.`);
     logger.info(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
+
+    client.user.setActivity(`${config.commandPrefix}help`, { type: 'LISTENING'});
 });
 
 client.on('disconnect', (errMsg, code) => {
