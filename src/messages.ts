@@ -38,6 +38,7 @@ export default class Messages {
         }
     }
 
+    // Need to keep this here for now so it will have access to the entire list.
     private helpHandler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
         const response: Discord.MessageEmbed = new Discord.MessageEmbed();
 
