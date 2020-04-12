@@ -2,6 +2,7 @@ import Config from "./config";
 import Discord from "discord.js";
 
 import DiceRoller from './commands/roll';
+import winston from "winston";
 
 
 type CommandHandler = (cmd: string, args: Array<string>) => Message | Discord.MessageEmbed;
@@ -19,8 +20,8 @@ export interface Command {
 
 export default class Messages {
 
-    constructor() {
-        var diceRoller = new DiceRoller();
+    constructor(private logger: winston.Logger) {
+        var diceRoller = new DiceRoller(this.logger);
 
         this.commandList[DiceRoller.commandCode] = {
             commandCode: DiceRoller.commandCode,

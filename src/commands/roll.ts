@@ -1,5 +1,6 @@
 import Discord from "discord.js";
 import Config from "../config"
+import winston from "winston";
 
 interface Results {
     numDice: number;
@@ -13,6 +14,11 @@ export default class DiceRoller {
     public static usage: string = `${Config.commandPrefix}${DiceRoller.commandCode} 4d8 2d10 11d20`;
 
     private errorEmbed = this.buildEmbedBoilerplate().addField("Dice Roller Error", "Something went wrong with your command. Please make sure all dice rolls are in the format `XdY`.");
+
+    constructor(private logger: winston.Logger)
+    {
+
+    }
 
     public handler = (cmd: string, args: Array<string>): Discord.MessageEmbed => {
         const results = this.rollHander(args);
@@ -56,7 +62,7 @@ export default class DiceRoller {
         else {
             finalString = totalSum;
         }
-        
+
         returnValue.addField("Total Dice Roll", finalString);
 
         return returnValue;
@@ -100,6 +106,7 @@ export default class DiceRoller {
         const regexResults = regex.exec(arg);
 
         if (!regexResults || regexResults.length < 3) {
+            this.logger.error(`[singleRollHandler] Bad regex response.`);
             return null;
         }
 
@@ -109,11 +116,18 @@ export default class DiceRoller {
                 diceSides: parseInt(regexResults[2]),
                 diceResults: []
             }
-    
+
+            if (results.numDice > 200 || results.diceSides > 200) {
+                this.logger.error(`[singleRollHandler] Too many dice or sides! Dice: ${results.numDice}. Sides: ${results.diceSides}.`);
+                return null;
+            }
+
             results.diceResults = this.calculateResults(results.numDice, results.diceSides);
             return results;
         }
-        catch {
+        catch (ex) {
+            
+            this.logger.error(`[singleRollHandler] Unexpected error: ${JSON.stringify(ex)}`);
             return null;
         }
     }

@@ -6,7 +6,7 @@ import Messages from "./messages";
 class Main {
     private logger: winston.Logger;
     private client: Discord.Client = new Discord.Client();
-    private messages: Messages = new Messages();
+    private messages: Messages;
 
     constructor() {
         this.logger = winston.createLogger({
@@ -17,6 +17,8 @@ class Main {
             ],
         });
         
+        this.messages = new Messages(this.logger);
+
         this.initializeDiscord();
     }
 
