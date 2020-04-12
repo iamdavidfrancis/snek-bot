@@ -27,8 +27,8 @@ class Main {
     }
 
     private initializeDiscord(): void {
-        this.client.on('ready', this.readyHandler);
-        this.client.on('message', this.messageHandler);
+        this.client.once<'ready'>('ready', this.readyHandler);
+        this.client.on<'message'>('message', this.messageHandler);
     }
 
     private readyHandler = () => {
@@ -43,7 +43,7 @@ class Main {
         }
     }
 
-    private messageHandler = (message: Discord.Message) => {
+    private messageHandler = async (message: Discord.Message): Promise<void> => {
         // Don't handle messages from bots.
         if (message.author.bot) {
             return;
@@ -65,11 +65,7 @@ class Main {
         const cmd = args[0].toLowerCase();
         args = args.splice(1);
 
-        const handledMessage = this.messages.handleCommand(cmd, args);
-
-        if (handledMessage) {
-            message.channel.send(handledMessage);
-        }
+        await this.messages.handleCommand(message, cmd, args);
     }
     
 }

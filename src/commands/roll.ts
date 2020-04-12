@@ -1,6 +1,7 @@
 import Discord from "discord.js";
 import Config from "../config"
 import winston from "winston";
+import ICommand from "../command.interface";
 
 interface Results {
     numDice: number;
@@ -8,10 +9,10 @@ interface Results {
     diceResults: Array<number>
 }
 
-export default class DiceRoller {
-    public static commandCode: string = "roll";
-    public static description: string = "A dice roller utility. Supports an arbitrary number of dice combinations.";
-    public static usage: string = `${Config.commandPrefix}${DiceRoller.commandCode} 4d8 2d10 11d20`;
+export default class DiceRoller implements ICommand {
+    public commandCode: string = "roll";
+    public description: string = "A dice roller utility. Supports an arbitrary number of dice combinations.";
+    public usage: string = `${Config.commandPrefix}${this.commandCode} 4d8 2d10 11d20`;
 
     private errorEmbed = this.buildEmbedBoilerplate().addField("Dice Roller Error", "Something went wrong with your command. Please make sure all dice rolls are in the format `XdY`.");
 
@@ -20,11 +21,12 @@ export default class DiceRoller {
 
     }
 
-    public handler = (cmd: string, args: Array<string>): Discord.MessageEmbed => {
-        const results = this.rollHander(args);
+    public handler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
+        const results = this.rollHandler(args);
 
         if (results == null) {
-            return this.errorEmbed
+            await message.channel.send(this.errorEmbed);
+            return;
         }
 
         const returnValue = this.buildEmbedBoilerplate();
@@ -35,16 +37,20 @@ export default class DiceRoller {
             let resultString = '';
             let sum = 0;
 
-            for (let i = 0; i < element.diceResults.length; i++) {
-                sum += element.diceResults[i];
-                resultString += `${element.diceResults[i]} `;
-
-                if (i + 1 < element.diceResults.length) {
-                    resultString += `+ `
+            if (element.diceResults.length > 1) {
+                for (let i = 0; i < element.diceResults.length; i++) {
+                    sum += element.diceResults[i];
+                    resultString += `${element.diceResults[i]} `;
+    
+                    if (i + 1 < element.diceResults.length) {
+                        resultString += `+ `
+                    }
+                    else {
+                        resultString += `= `
+                    }
                 }
-                else {
-                    resultString += `= `
-                }
+            } else {
+                sum = element.diceResults[0];
             }
 
             totalElements.push(`${sum}`);
@@ -65,7 +71,8 @@ export default class DiceRoller {
 
         returnValue.addField("Total Dice Roll", finalString);
 
-        return returnValue;
+        // Send the message
+        await message.channel.send(returnValue);
     }
 
     private buildEmbedBoilerplate(): Discord.MessageEmbed {
@@ -74,7 +81,7 @@ export default class DiceRoller {
             .setDescription("Dice roll result");
     }
 
-    private rollHander = (args: Array<string>): Array<Results> | null => {
+    private rollHandler = (args: Array<string>): Array<Results> | null => {
         const results: Array<Results> = [];
         let error = false;
 
