@@ -119,7 +119,7 @@ export default class Newsletter implements ICommand {
                 return;
             }
 
-            if (pendingInvite.inviteExpirationTime && new Date() < pendingInvite.inviteExpirationTime) {
+            if (pendingInvite.inviteExpirationTime && new Date() > pendingInvite.inviteExpirationTime) {
                 await message.channel.send(`This code is expired. Please try again with \`${Config.commandPrefix}plex-newsletter subscribe ${email}\``);
                 return;
             }
