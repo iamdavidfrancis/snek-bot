@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:lts-alpine3.9
 LABEL maintainer="David Francis <david@iamdavidfrancis.com>"
 
 USER root
