@@ -6,6 +6,7 @@ import Config from "../config";
 
 import DBService, {InvitationDBStatus} from "../services/db-service";
 import MailgunService from "../services/mailgun-service";
+import ServiceFactory from "../services/serviceFactory";
 
 type Handler = (message: Discord.Message, args: Array<string>) => Promise<void>;
 
@@ -16,8 +17,8 @@ export default class Newsletter implements ICommand {
 
     private subCommands = new Discord.Collection<string, Handler>();
 
-    private dbService: DBService = new DBService();
-    private mailgunService: MailgunService = new MailgunService();
+    private dbService: DBService = ServiceFactory.DBServiceInstance;
+    private mailgunService: MailgunService = ServiceFactory.MailgunServiceInstance;
 
     constructor() {
         this.subCommands.set("help", this.helpHandler);

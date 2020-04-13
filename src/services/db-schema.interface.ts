@@ -11,3 +11,10 @@ export interface IPendingInvite {
     redeemed?: boolean;
     subscribed?: boolean;
 }
+
+export interface ICustomCommand {
+    commandCode: string;
+    description?: string;
+    respondText: string;
+    approved?: boolean;
+}
