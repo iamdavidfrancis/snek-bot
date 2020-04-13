@@ -80,14 +80,16 @@ export default class Newsletter implements ICommand {
         }
 
         const status = await this.dbService.getInvitationStatus(email);
-        // const mailgunStatus = await this.mailgunService.checkIfSubscribed(email);
-
-        // if (mailgunStatus) {
-        //     await message.channel.send("It looks like the email is already subscribed. Please contact Franchyze#9084 if you are not receiving the newsletter.");
-        //     return;
-        // }
 
         if (!otp) {
+            // Bail out early if they're already on the MG list.
+            const mailgunStatus = await this.mailgunService.checkIfSubscribed(email);
+
+            if (mailgunStatus) {
+                await message.channel.send("It looks like the email is already subscribed. Please contact Franchyze#9084 if you are not receiving the newsletter.");
+                return;
+            }
+
             switch (status) {
                 case InvitationDBStatus.TooManyAttempts:
                     await message.channel.send("Sorry, there have been too many attempts to add that email address. Please contact Franchyze#9084 for more information.");
@@ -122,26 +124,53 @@ export default class Newsletter implements ICommand {
                 return;
             }
 
-            await this.performSubscribe(message, email);
+            await this.performSubscribe(message, email, true);
         }
     }
 
     private unsubscribeHandler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
+        if (args.length !== 1) {
+            await this.invalidMessage(message);
+            return;
+        }
 
+        const email = args[0];
+
+        const status = await this.dbService.getInvitationStatus(email);
+        const mailgunStatus = await this.mailgunService.checkIfSubscribed(email);
+
+        if (status !== InvitationDBStatus.Subscribed && !mailgunStatus) {
+            // User is not subscribed
+            message.channel.send("You are not currently subscribed.");
+            return;
+        }
+
+        if (mailgunStatus) {
+            await this.mailgunService.unsubscribe(email);
+        }
+
+        if (status === InvitationDBStatus.Subscribed) {
+            await this.dbService.updateSubscription(email, false);
+        }
+
+        message.channel.send("Unsubscribed successfully.");
     }
 
     private invalidMessage = async (message: Discord.Message) => {
         await message.channel.send("Sorry, that was not a valid command.");
     }
 
-    private performSubscribe = async (message: Discord.Message, email: string) => {
+    private performSubscribe = async (message: Discord.Message, email: string, isRedeem: boolean = false) => {
         // 2. Add to mailing list.
+        await this.mailgunService.subscribe(email);
         // 3. Set as subscribed in DB.
+        if (isRedeem) {
+            await this.dbService.redeem(email);
+        } else { 
+            await this.dbService.updateSubscription(email, true);
+        }
         // 4. Send message.
-    }
-
-    private performUnsubscribe = async (message: Discord.Message, email: string) => {
-
+        await message.channel.send("Successfully subscribed to the newsletter. Thanks :)");
     }
 
     private performInvite = async (message: Discord.Message, email: string) => {
@@ -155,7 +184,7 @@ export default class Newsletter implements ICommand {
         await this.dbService.createInvitation(email, otp, this.addDays(new Date(), 1));
         
         // 5. Send message
-        message.channel.send("Sent an invitation email. Please check your email and run the command you receive. Thanks :)");
+        await message.channel.send("Sent an invitation email. Please check your email and run the command you receive. Thanks :)");
     }
 
     private addDays(date: Date, days: number) {

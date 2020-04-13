@@ -113,12 +113,28 @@ export default class DBService {
         await this.db
             .get("pendingInvites")
             .find({ email })
-            .assign({ subscribed })
+            .assign({ subscribed, redeemed: true })
             .write();
 
         return subscribed ? 
             InvitationDBStatus.Subscribed :
             InvitationDBStatus.Unsubscribed;
+    }
+
+    public redeem = async (email: string): Promise<InvitationDBStatus> => {
+        const inviteStatus = await this.getInvitationStatus(email);
+
+        if (inviteStatus !== InvitationDBStatus.Unredeemed) {
+            return inviteStatus;
+        }
+
+        await this.db
+            .get("pendingInvites")
+            .find({ email })
+            .assign({ subscribed: true, redeemed: true })
+            .write();
+
+        return InvitationDBStatus.Subscribed;
     }
 
     private initializeGuard = async () => {

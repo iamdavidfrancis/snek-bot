@@ -26,23 +26,30 @@ export default class MailgunService {
 
     public async checkIfSubscribed(email: string): Promise<boolean> {
         const url = this.getMembersUrl + `/${email}`;
-        var response = await this.axios.get<ListMemberResponse>(url)
 
-        if (response.status === 200 && response.data) {
-            return response.data.member.subscribed
+        try {
+            var response = await this.axios.get<ListMemberResponse>(url)
+
+            if (response.status === 200 && response.data) {
+                return response.data.member.subscribed
+            }
+
+            return false;
         }
+        catch (error) {
+            if (error?.response?.status === 404) {
+                return false;
+            }
 
-        return false;
+            throw error;
+        }
+        
     }
 
     public async subscribe(email: string): Promise<boolean> {
-        const operation: MailgunMember = {
-            address: email,
-            subscribed: true,
-            upsert: true
-        };
+        const postBody = `address=${email}&subscribed=true&upsert=true`
 
-        const result = await this.axios.post(this.getMembersUrl, operation);
+        const result = await this.axios.post(this.getMembersUrl, postBody);
 
         if (result.status >= 400) {
             return false;
@@ -81,4 +88,6 @@ export default class MailgunService {
             });
         });
     }
+
+    
 }
