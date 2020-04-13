@@ -13,6 +13,7 @@ export default class DiceRoller implements ICommand {
     public commandCode: string = "roll";
     public description: string = "A dice roller utility. Supports an arbitrary number of dice combinations.";
     public usage: string = `${Config.commandPrefix}${this.commandCode} 4d8 2d10 11d20`;
+    public allowInline: boolean = true;
 
     private errorEmbed = this.buildEmbedBoilerplate().addField("Dice Roller Error", "Something went wrong with your command. Please make sure all dice rolls are in the format `XdY`.");
 

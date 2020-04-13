@@ -14,6 +14,7 @@ export default class Newsletter implements ICommand {
     public commandCode: string = "plex-newsletter";
     public description: string = "Manage your membership in the plex newsletter.";
     public usage: string = `Only works in DMs. Subscribe to the newsletter with \`${Config.commandPrefix}plex-newsletter subscribe {email}\`. Type \`${Config.commandPrefix}plex-newsletter help\` for more information.`;
+    public allowInline: boolean = false;
 
     private subCommands = new Discord.Collection<string, Handler>();
 
@@ -31,12 +32,16 @@ export default class Newsletter implements ICommand {
     public handler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
         if (message.channel.type !== "dm") {
             if (message.deletable) {
-                await message.delete();
+                try {
+                    await message.delete();
+                }
+                catch {}
             }
             
             await message.reply({
                 content: "This functionality is only available in DMs. Please try again in DM."
             });
+            return;
         }
 
         if (args.length === 0) {

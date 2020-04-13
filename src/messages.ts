@@ -17,7 +17,8 @@ export default class Messages {
             {
                 commandCode: Config.helpCommand,
                 description: 'Display help.',
-                handler: this.helpHandler
+                handler: this.helpHandler,
+                allowInline: true
             },
             new DiceRoller(this.logger),
             new Plagueis(),
@@ -46,24 +47,24 @@ export default class Messages {
 
         const fields: Array<{name: string, value: string, inline?: boolean}> =[];
 
-        for (const key in this.commands.array()) {
-            const value = this.commands.get(key);
+        const commandArray = this.commands.array();
 
-            if (!value) {
-                continue;
+        commandArray.forEach(command => {
+            if (!command) {
+                return;
             }
 
-            let description = value.description;
-            if (value.usage) {
-                description += `\nUsage: \`${value.usage}\``;
+            let description = command.description;
+            if (command.usage) {
+                description += `\nUsage: ${command.usage}`;
             }
 
             fields.push({
-                name: Config.commandPrefix + value.commandCode,
+                name: Config.commandPrefix + command.commandCode,
                 value: description,
-                inline: true
+                inline: command.allowInline
             });
-        }
+        });
 
         response
             .setTitle(Config.botName)
