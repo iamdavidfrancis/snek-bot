@@ -140,7 +140,7 @@ export default class DiceRoller implements ICommand {
     }
 
     private calculateResults = (numDice: number, numSides: number): Array<number> => {
-        const results = []
+        const results: Array<number> = []
 
         for (let i = 0; i < numDice; i++) {
             const result = Math.ceil(Math.random() * numSides);
