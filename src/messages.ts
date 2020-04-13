@@ -6,6 +6,7 @@ import ICommand from "./command.interface";
 import DiceRoller from './commands/roll';
 import Plagueis from './commands/plagueis';
 import NavySeal from './commands/navy-seal';
+import Newsletter from './commands/newsletter';
 
 
 export default class Messages {
@@ -20,7 +21,8 @@ export default class Messages {
             },
             new DiceRoller(this.logger),
             new Plagueis(),
-            new NavySeal()
+            new NavySeal(),
+            new Newsletter()
         ];
 
         commands.forEach(command => {
