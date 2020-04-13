@@ -1,4 +1,5 @@
 import Config from "../config";
+
 import axios, { AxiosRequestConfig, AxiosBasicCredentials, AxiosInstance } from "axios";
 import mailgun from "mailgun-js";
 
@@ -9,7 +10,6 @@ export default class MailgunService {
     private mg = mailgun({ apiKey: Config.mailgunApiKey, domain: Config.newsletterDomain });
 
     private getMembersUrl: string = `lists/${Config.newsletterAddress}/members`;
-    private sendEmailUrl: string = `${Config.newsletterDomain}/messages`;
 
     constructor() {
         const auth: AxiosBasicCredentials = {
