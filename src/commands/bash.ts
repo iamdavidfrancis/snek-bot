@@ -14,7 +14,7 @@ export default class Bash implements ICommand {
     }
 
     public commandCode: string = "bash";
-    public description: string = "Random bash.org copypasta.";
+    public description: string = "Random bash.org post.";
     public allowInline: boolean = true;
     public handler = async (message: Discord.Message): Promise<void> => {
         const max = bash.quotes.length - 1;
