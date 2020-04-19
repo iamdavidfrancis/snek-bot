@@ -7,6 +7,7 @@ import DiceRoller from './commands/roll';
 import Plagueis from './commands/plagueis';
 import NavySeal from './commands/navy-seal';
 import Newsletter from './commands/newsletter';
+import Bash from './commands/bash';
 
 
 export default class Messages {
@@ -23,6 +24,7 @@ export default class Messages {
             new DiceRoller(this.logger),
             new Plagueis(),
             new NavySeal(),
+            new Bash(this.logger),
             new Newsletter()
         ];
 
