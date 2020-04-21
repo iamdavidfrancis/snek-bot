@@ -51,6 +51,11 @@ class Main {
 
         // Only handle commands with our prefix.
         if (message.content.substring(0, 1) !== Config.commandPrefix) {
+            // Custom tiktok link response.
+            if (message.content.indexOf("tiktok.com/") >= 0) {
+                await message.reply("Fuck TikTok.");
+            }
+
             // Don't actually send a reply as other bots can use this prefix as well.
             return;
         }
