@@ -56,6 +56,10 @@ class Main {
                 await message.reply("Fuck TikTok.");
             }
 
+            if (message.content.indexOf("Fuck you, robot") >= 0) {
+                await message.reply("No, fuck you.");
+            }
+
             // Don't actually send a reply as other bots can use this prefix as well.
             return;
         }
