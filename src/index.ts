@@ -57,7 +57,7 @@ class Main {
             }
 
             if (message.content.indexOf("Fuck you, robot") >= 0) {
-                await message.reply("No, fuck you.");
+                await message.reply("No, fuck you.", { files: ["https://i.imgur.com/84MOMYV.png"]});
             }
 
             // Don't actually send a reply as other bots can use this prefix as well.
