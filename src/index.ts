@@ -4,7 +4,7 @@ import Config from "./config";
 import Messages from "./messages";
 
 const DIMMA_VOICE = "704098346343858386";
-const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; // 
+const DIMMA_FILE = // "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; 
 
 class Main {
     private logger: winston.Logger;
@@ -52,7 +52,7 @@ class Main {
 
                 let dispatcher = this.connection.play(DIMMA_FILE)
     
-                dispatcher.on('end', () => {
+                dispatcher.on('finish', () => {
                     this.connection?.play(DIMMA_FILE);
                 });
             }
