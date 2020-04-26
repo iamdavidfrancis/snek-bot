@@ -3,6 +3,9 @@ import winston, { debug } from "winston";
 import Config from "./config";
 import Messages from "./messages";
 
+const DIMMA_VOICE = "704098346343858386";
+const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; // 
+
 class Main {
     private logger: winston.Logger;
     private client: Discord.Client = new Discord.Client();
@@ -31,7 +34,7 @@ class Main {
         this.client.on<'message'>('message', this.messageHandler);
     }
 
-    private readyHandler = () => {
+    private readyHandler = async () => {
         this.logger.info('Connected');
 
         if (!this.client.user) {
@@ -40,6 +43,19 @@ class Main {
         else {
             this.logger.info(`Logged in as: ${this.client.user.tag}.`);
             this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: 'LISTENING'});
+
+            let voiceChannel = this.client.channels.cache.get(DIMMA_VOICE);
+
+            if (voiceChannel) {
+                let connection = await (voiceChannel as Discord.VoiceChannel).join();
+
+                let dispatcher = connection.play(DIMMA_FILE)
+    
+                dispatcher.on('end', () => {
+                    connection?.play(DIMMA_FILE);
+                });
+            }
+
         }
     }
 

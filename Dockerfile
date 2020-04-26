@@ -13,6 +13,7 @@ RUN cd /tmp && npm install --loglevel=warn \
 COPY src $APP/src
 COPY package.json $APP
 COPY tsconfig.json $APP
+COPY dimmadome.mp3 $APP
 
 WORKDIR $APP
 
