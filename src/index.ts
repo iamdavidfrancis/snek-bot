@@ -2,9 +2,11 @@ import Discord from "discord.js";
 import winston, { debug } from "winston";
 import Config from "./config";
 import Messages from "./messages";
+import ytdl  from 'ytdl-core';
 
 const DIMMA_VOICE = "704098346343858386";
 const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; //
+const DIMMA_YOUTUBE = "https://www.youtube.com/watch?v=SBxpeuxUiOA";
 
 class Main {
     private logger: winston.Logger;
@@ -50,10 +52,10 @@ class Main {
             if (voiceChannel) {
                 this.connection = await (voiceChannel as Discord.VoiceChannel).join();
 
-                let dispatcher = this.connection.play(DIMMA_FILE, { volume: 0.75 })
+                let dispatcher = this.connection.play(ytdl(DIMMA_YOUTUBE, { filter: 'audioonly' }), { volume: 0.75 })
     
                 dispatcher.on('finish', () => {
-                    this.connection?.play(DIMMA_FILE, { volume: 0.75 });
+                    this.connection?.play(ytdl(DIMMA_YOUTUBE, { filter: 'audioonly' }), { volume: 0.75 });
                 });
             }
 
