@@ -10,6 +10,7 @@ class Main {
     private logger: winston.Logger;
     private client: Discord.Client = new Discord.Client();
     private messages: Messages;
+    private connection?: Discord.VoiceConnection;
 
     constructor() {
         this.logger = winston.createLogger({
@@ -47,12 +48,12 @@ class Main {
             let voiceChannel = this.client.channels.cache.get(DIMMA_VOICE);
 
             if (voiceChannel) {
-                let connection = await (voiceChannel as Discord.VoiceChannel).join();
+                this.connection = await (voiceChannel as Discord.VoiceChannel).join();
 
-                let dispatcher = connection.play(DIMMA_FILE)
+                let dispatcher = this.connection.play(DIMMA_FILE)
     
                 dispatcher.on('end', () => {
-                    connection?.play(DIMMA_FILE);
+                    this.connection?.play(DIMMA_FILE);
                 });
             }
 
