@@ -50,10 +50,10 @@ class Main {
             if (voiceChannel) {
                 this.connection = await (voiceChannel as Discord.VoiceChannel).join();
 
-                let dispatcher = this.connection.play(DIMMA_FILE)
+                let dispatcher = this.connection.play(DIMMA_FILE, { volume: 0.75 })
     
                 dispatcher.on('finish', () => {
-                    this.connection?.play(DIMMA_FILE);
+                    this.connection?.play(DIMMA_FILE, { volume: 0.75 });
                 });
             }
 

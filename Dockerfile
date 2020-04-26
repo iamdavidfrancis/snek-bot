@@ -4,6 +4,8 @@ LABEL maintainer="David Francis <david@iamdavidfrancis.com>"
 USER root
 ENV APP /usr/src/APP
 
+RUN apk update && apk add ffmpeg && rm -rf /var/cache/apk/*
+
 COPY package.json /tmp/package.json
 
 RUN cd /tmp && npm install --loglevel=warn \
