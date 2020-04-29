@@ -46,15 +46,15 @@ export default class TikTok implements ICommand {
         const inputFilename =  path.join('videos', `${id}.mp4`);
 
         try {
+            this.logger.info("Initiating download.");
             const video = youtubedl(url, [], { cwd: __dirname }); // `-o ${inputFilename}`
 
+            this.logger.info("Register callbacks");
             video.on('info', (info) => {
                 this.logger.info('Download started: ' + url);
                 this.logger.info('filename: ' + info.filename);
                 this.logger.info('size: ' + info.size);
             });
-    
-            video.pipe(fs.createWriteStream(inputFilename));
     
             video.on('end', async () => {
                 this.logger.info("Uploading to Discord: " + inputFilename);
@@ -81,8 +81,12 @@ export default class TikTok implements ICommand {
                     fs.unlinkSync(inputFilename);
                 }
             });
+    
+            this.logger.info("Register pipe");
+            video.pipe(fs.createWriteStream(inputFilename));
         }
         catch (e) {
+            this.logger.verbose("An error has occurred");
             this.logger.error(JSON.stringify(e));
         }
     }
