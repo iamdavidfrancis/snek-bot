@@ -16,6 +16,16 @@
         },
         {
             "type": "node",
+            "request": "attach",
+            "name": "Attach",
+            "port": 9229,
+            "address": "192.168.2.35",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
             "request": "launch",
             "name": "Launch Program",
             "skipFiles": [

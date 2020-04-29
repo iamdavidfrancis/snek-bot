@@ -47,7 +47,7 @@ export default class TikTok implements ICommand {
 
         try {
             this.logger.info("Initiating download.");
-            const video = youtubedl(url, [], { cwd: __dirname }); // `-o ${inputFilename}`
+            const video = youtubedl(url, [], {  }); // `-o ${inputFilename}` // { cwd: __dirname }
 
             this.logger.info("Register callbacks");
             video.on('info', (info) => {

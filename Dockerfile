@@ -21,4 +21,6 @@ WORKDIR $APP
 
 RUN npm run build
 
-CMD [ "node", "dist/index.js" ]
+EXPOSE 9229
+
+CMD [ "node", "--inspect dist/index.js" ]
