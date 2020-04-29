@@ -2,7 +2,8 @@ import Discord from "discord.js";
 import winston, { debug } from "winston";
 import Config from "./config";
 import Messages from "./messages";
-import ytdl  from 'ytdl-core';
+// import ytdl  from 'ytdl-core';
+import TikTok from "./commands/tiktok";
 
 const DIMMA_VOICE = "704098346343858386";
 const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; //
@@ -13,6 +14,7 @@ class Main {
     private client: Discord.Client = new Discord.Client();
     private messages: Messages;
     private connection?: Discord.VoiceConnection;
+    private tikTok: TikTok;
 
     constructor() {
         this.logger = winston.createLogger({
@@ -26,6 +28,8 @@ class Main {
         this.messages = new Messages(this.logger);
 
         this.initializeDiscord();
+
+        this.tikTok = new TikTok(this.logger);
     }
 
     public start() {
@@ -72,7 +76,12 @@ class Main {
         if (message.content.substring(0, 1) !== Config.commandPrefix) {
             // Custom tiktok link response.
             if (message.content.indexOf("tiktok.com/") >= 0) {
-                await message.reply("Fuck TikTok.");
+                // await message.reply("Fuck TikTok.");
+                try {
+                    await this.tikTok.handler(message, [message.content]);
+                } catch (e) {
+                    await message.reply("Fuck TikTok.");
+                }
             }
 
             if (message.content.indexOf("Fuck you, robot") >= 0) {

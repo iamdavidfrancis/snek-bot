@@ -15,6 +15,8 @@ COPY package.json $APP
 COPY tsconfig.json $APP
 COPY dimmadome.mp3 $APP
 
+RUN mkdir $APP/videos
+
 WORKDIR $APP
 
 RUN npm run build
