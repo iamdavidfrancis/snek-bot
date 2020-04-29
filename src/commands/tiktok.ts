@@ -56,11 +56,14 @@ export default class TikTok implements ICommand {
         video.pipe(fs.createWriteStream(inputFilename));
 
         video.on('end', async () => {
+            this.logger.info("Uploading to Discord: " + inputFilename);
+
             await message.reply({
                 content: "fine, you win. But no one else has to watch it on TikTok now.",
                 files: [inputFilename]
             });
 
+            this.logger.info("Deleting file.");
             fs.unlinkSync(inputFilename);
 
             // If the entire message is just the url, delete it.
