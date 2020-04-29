@@ -8,7 +8,7 @@
         {
             "type": "node",
             "request": "attach",
-            "name": "Attach",
+            "name": "Attach - Local",
             "port": 9229,
             "skipFiles": [
                 "<node_internals>/**"
@@ -17,8 +17,8 @@
         {
             "type": "node",
             "request": "attach",
-            "name": "Attach",
-            "port": 9229,
+            "name": "Attach - Prod",
+            "port": 32771,
             "address": "192.168.2.35",
             "skipFiles": [
                 "<node_internals>/**"
