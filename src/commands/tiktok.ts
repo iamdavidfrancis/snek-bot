@@ -60,10 +60,19 @@ export default class TikTok implements ICommand {
                 this.logger.info("Uploading to Discord: " + inputFilename);
     
                 try {
-                    await message.reply({
-                        content: "fine, you win. But no one else has to watch it on TikTok now.",
-                        files: [inputFilename]
-                    });
+                    try {
+                        await message.reply({
+                            content: "fine, you win. But no one else has to watch it on TikTok now.",
+                            files: [inputFilename]
+                        });
+                    } catch (e) {
+                        if (e && e.httpStatus === 413) {
+                            await message.reply({
+                                content: "wow that's a big video. It ain't happening dawg. Try something smaller next time. Bet that's the first time you heard that sentence right?",
+                            });
+                        }
+                    }
+                    
                     
                     // If the entire message is just the url, delete it.
                     if (message.deletable && url === message.content) {
