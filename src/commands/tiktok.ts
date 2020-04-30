@@ -81,13 +81,17 @@ export default class TikTok implements ICommand {
                     fs.unlinkSync(inputFilename);
                 }
             });
+
+            video.on('error', (e) => {
+                this.logger.error(JSON.stringify(e, null, '\t'))
+            })
     
             this.logger.info("Register pipe");
             video.pipe(fs.createWriteStream(inputFilename));
         }
         catch (e) {
             this.logger.verbose("An error has occurred");
-            this.logger.error(JSON.stringify(e));
+            this.logger.error(JSON.stringify(e, null, '\t'))
         }
     }
 }
