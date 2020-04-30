@@ -6,6 +6,8 @@ ENV APP /usr/src/APP
 
 COPY package.json /tmp/package.json
 
+RUN apk update && apk add python && rm -rf /var/cache/apk/*
+
 RUN cd /tmp && npm install --loglevel=warn \
     && mkdir -p $APP \
     && mv /tmp/node_modules $APP
@@ -21,6 +23,4 @@ WORKDIR $APP
 
 RUN npm run build
 
-EXPOSE 9229
-
-CMD [ "node", "--inspect=0.0.0.0:9229", "dist/index.js" ]
+CMD [ "node", "dist/index.js" ]

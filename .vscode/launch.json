@@ -18,11 +18,12 @@
             "type": "node",
             "request": "attach",
             "name": "Attach - Prod",
-            "port": 32773,
+            "port": 9229,
             "address": "192.168.2.35",
             "skipFiles": [
                 "<node_internals>/**"
-            ]
+            ],
+            "remoteRoot": "/usr/src/APP"
         },
         {
             "type": "node",
