@@ -18,7 +18,7 @@
             "type": "node",
             "request": "attach",
             "name": "Attach - Prod",
-            "port": 32772,
+            "port": 32773,
             "address": "192.168.2.35",
             "skipFiles": [
                 "<node_internals>/**"

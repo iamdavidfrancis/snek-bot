@@ -23,4 +23,4 @@ RUN npm run build
 
 EXPOSE 9229
 
-CMD node --inspect dist/index.js
+CMD [ "node", "--inspect=0.0.0.0:9229", "dist/index.js" ]
