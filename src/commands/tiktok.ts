@@ -24,19 +24,8 @@ export default class TikTok implements ICommand {
             return;
         }
 
-        let content = args[0];
-        const urls = content.match(urlRegex());
-
-        if (!urls) {
-            return;
-        }
-
-        let url = urls.find(url => url.startsWith("https://v"));
-
-        if (!url) {
-            return;
-        }
-
+        let url = args[0];
+        
         if (url.endsWith("/")) {
             url = url.substring(0, url.length - 1);
         }
