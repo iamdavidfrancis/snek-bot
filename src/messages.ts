@@ -9,7 +9,8 @@ import NavySeal from './commands/navy-seal';
 import Newsletter from './commands/newsletter';
 import Bash from './commands/bash';
 import Dimmadome from './commands/dimma';
-
+import WhoIs from './commands/whois';
+import IAm from './commands/iam';
 
 export default class Messages {
     private commands = new Discord.Collection<string, ICommand>();
@@ -25,6 +26,8 @@ export default class Messages {
             new DiceRoller(this.logger),
             new Plagueis(),
             new NavySeal(),
+            new WhoIs(),
+            new IAm(),
             new Bash(this.logger),
             new Newsletter(),
             // new Dimmadome()

@@ -1,5 +1,11 @@
 export default interface IDBSchema {
-    pendingInvites: Array<IPendingInvite>
+    pendingInvites: Array<IPendingInvite>;
+    users: Array<SnekMember>;
+}
+
+export interface SnekMember {
+    userid: string;
+    realname: string;
 }
 
 export interface IPendingInvite {

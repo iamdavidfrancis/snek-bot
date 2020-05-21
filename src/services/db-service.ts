@@ -2,7 +2,7 @@ import lowdb from "lowdb";
 import FileAsync from "lowdb/adapters/FileAsync";
 
 import Config from '../config';
-import IDBSchema, { IPendingInvite } from './db-schema.interface';
+import IDBSchema, { IPendingInvite, SnekMember } from './db-schema.interface';
 
 export enum InvitationDBStatus {
     Uninvited,
@@ -24,7 +24,56 @@ export default class DBService {
         const adapter = new FileAsync<IDBSchema>(Config.databasePath);
         this.db = await lowdb(adapter);
 
-        this.db.defaults({ pendingInvites: [] }).value();
+        this.db.defaults({ pendingInvites: [], users: [] }).value();
+    }
+
+    public getSnekById = async (userid: string): Promise<SnekMember|undefined> => {
+        await this.initializeGuard();
+
+        return this.db
+            .get('users')
+            .find({ userid })
+            .value();
+    }
+
+    public getSnekByName = async (realname: string): Promise<SnekMember|undefined> => {
+        await this.initializeGuard();
+
+        return this.db
+            .get('users')
+            .find({ realname: realname.toLowerCase() })
+            .value();
+    }
+
+    public addSnek = async (userid: string, realname: string): Promise<void> => {
+        await this.initializeGuard();
+
+        const existing = await this.db
+            .get("users")
+            .find({ userid })
+            .value();
+
+        if (!!existing) {
+            await this.db
+                .get("users")
+                .find({ userid })
+                .assign({
+                    userid,
+                    realname: realname.toLowerCase()
+                })
+                .write();
+        }
+        else
+        {
+            await this.db
+                .get("users")
+                .push({
+                    userid,
+                    realname: realname.toLowerCase()
+                })
+                .write();
+        }
+            
     }
 
     public getInvitationStatus = async (email: string): Promise<InvitationDBStatus> => {
