@@ -10,7 +10,7 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'ebd5431b-6437-4fc1-bfd0-cefaf4ad2455'
+  dockerRegistryServiceConnection: '5cd700f0-fee4-46cc-9380-e79cdc51d368'
   imageRepository: 'snek-bot'
   containerRegistry: 'dafranctest.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
