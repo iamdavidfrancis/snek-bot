@@ -4,6 +4,7 @@ import youtubedl from "youtube-dl";
 import fs from "fs";
 import urlRegex from "url-regex";
 import path from "path";
+import axios from "axios";
 
 import ICommand from "../command.interface";
 
@@ -33,6 +34,7 @@ export default class TikTok implements ICommand {
         const urlParts = url.split("/");
         const id = urlParts[urlParts.length - 1];
         const inputFilename =  path.join('videos', `${id}.mp4`);
+        const backupFilename = path.join('videos', `${id}-backup.mp4`);
 
         try {
             this.logger.info("Initiating download.");
@@ -44,15 +46,15 @@ export default class TikTok implements ICommand {
                 this.logger.info('filename: ' + info.filename);
                 this.logger.info('size: ' + info.size);
             });
-    
-            video.on('end', async () => {
-                this.logger.info("Uploading to Discord: " + inputFilename);
+
+            const handleWrite = async (fileName: string) => {
+                this.logger.info("Uploading to Discord: " + fileName);
     
                 try {
                     try {
                         await message.reply({
                             content: "fine, you win. But no one else has to watch it on TikTok now.",
-                            files: [inputFilename]
+                            files: [fileName]
                         });
 
                         // If the entire message is just the url, delete it.
@@ -75,12 +77,52 @@ export default class TikTok implements ICommand {
                 finally
                 {
                     this.logger.info("Deleting file.");
-                    fs.unlinkSync(inputFilename);
+                    fs.unlinkSync(fileName);
                 }
+            };
+    
+            video.on('end', async () => {
+                await handleWrite(inputFilename);
             });
 
-            video.on('error', (e) => {
+            video.on('error', async (e: any) => {
+                this.logger.error('youtube-dl failed. Trying backup (hacky) solution.');
                 this.logger.error(JSON.stringify(e, null, '\t'))
+
+                if (e && e.stderr) {
+                    const lines = e.stderr.split('\n');
+
+                    if (lines.length == 2 && lines[0] == 'WARNING: Falling back on generic information extractor.' && lines[1].startsWith('ERROR: Unsupported URL: ')) {
+                        fs.unlinkSync(inputFilename);
+
+                        const finalUrl = lines[1].replace('ERROR: Unsupported URL: ', '').split('?')[0];
+                        const encodedUrl = encodeURIComponent(finalUrl);
+
+                        const fetchUrl = `https://onlinetik.com/wp-admin/admin-ajax.php?action=wppress_tt_download&url=${encodedUrl}&key=no-watermark`
+                        const writer = fs.createWriteStream(backupFilename);
+
+                        const response = await axios({url: fetchUrl, method: 'GET', responseType: 'stream'});
+
+                        response.data.pipe(writer);
+
+                        return new Promise((res, rej) => {
+                            writer.on('finish', async () => {
+                                this.logger.info('Holy shit the backup hack worked.');
+                                await handleWrite(backupFilename);
+                                return res();
+                            });
+                            writer.on('error', (err) => {
+                                this.logger.error(JSON.stringify(err, null, '\t'))
+
+                                this.logger.info("Deleting file.");
+                                fs.unlinkSync(backupFilename);
+
+                                return rej(err);
+                            });
+                        })
+
+                    }
+                }
             })
     
             this.logger.info("Register pipe");
