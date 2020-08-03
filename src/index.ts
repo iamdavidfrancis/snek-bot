@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { TextChannel } from "discord.js";
 import winston, { debug } from "winston";
 import Config from "./config";
 import Messages from "./messages";
@@ -39,6 +39,35 @@ class Main {
     private initializeDiscord(): void {
         this.client.once<'ready'>('ready', this.readyHandler);
         this.client.on<'message'>('message', this.messageHandler);
+        this.client.on<'channelDelete'>('channelDelete', this.channelDeleteHandler);
+    }
+
+    private channelDeleteHandler = async (channel: Discord.Channel | Discord.PartialDMChannel) => {
+        this.logger.info(JSON.stringify(channel, null, '\t'));
+        if (channel.type == "text") {
+            const textChannel = channel as Discord.TextChannel;
+
+            const guild = await textChannel.guild.fetch();
+
+            const auditLogs = await guild.fetchAuditLogs({ type: Discord.GuildAuditLogs.Actions.CHANNEL_DELETE });
+
+            const auditEntry = auditLogs.entries.find(a => (a && a.target && (a.target as any).id) === textChannel.id);
+
+            const announceChannel = guild.channels.cache.find(c => c.name == "announcements");
+
+            let message: string;
+            if (auditEntry) {
+                const initiator = auditEntry.executor.id;
+    
+                message = `What the fuck, <@!${initiator}>? You just deleted #${textChannel.name}!`;
+            } else {
+                message = `Someone just deleted #${textChannel.name}!`;
+            }
+
+            await (announceChannel as TextChannel).send({
+                content: message
+            });
+        }
     }
 
     private readyHandler = async () => {
