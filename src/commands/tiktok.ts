@@ -89,38 +89,41 @@ export default class TikTok implements ICommand {
                 this.logger.error('youtube-dl failed. Trying backup (hacky) solution.');
                 this.logger.error(JSON.stringify(e, null, '\t'))
 
+                fs.unlinkSync(inputFilename);
+
                 if (e && e.stderr) {
                     const lines = e.stderr.split('\n');
 
                     if (lines.length == 2 && lines[0] == 'WARNING: Falling back on generic information extractor.' && lines[1].startsWith('ERROR: Unsupported URL: ')) {
-                        fs.unlinkSync(inputFilename);
+                        
+                        const finalUrl: string = lines[1].replace('ERROR: Unsupported URL: ', '').split('?')[0];
 
-                        const finalUrl = lines[1].replace('ERROR: Unsupported URL: ', '').split('?')[0];
-                        const encodedUrl = encodeURIComponent(finalUrl);
+                        if (finalUrl.indexOf("tiktok.com") > 0) {
+                            const encodedUrl = encodeURIComponent(finalUrl);
 
-                        const fetchUrl = `https://onlinetik.com/wp-admin/admin-ajax.php?action=wppress_tt_download&url=${encodedUrl}&key=no-watermark`
-                        const writer = fs.createWriteStream(backupFilename);
+                            const fetchUrl = `https://onlinetik.com/wp-admin/admin-ajax.php?action=wppress_tt_download&url=${encodedUrl}&key=no-watermark`
+                            const writer = fs.createWriteStream(backupFilename);
 
-                        const response = await axios({url: fetchUrl, method: 'GET', responseType: 'stream'});
+                            const response = await axios({url: fetchUrl, method: 'GET', responseType: 'stream'});
 
-                        response.data.pipe(writer);
+                            response.data.pipe(writer);
 
-                        return new Promise((res, rej) => {
-                            writer.on('finish', async () => {
-                                this.logger.info('Holy shit the backup hack worked.');
-                                await handleWrite(backupFilename);
-                                return res();
+                            return new Promise((res, rej) => {
+                                writer.on('finish', async () => {
+                                    this.logger.info('Holy shit the backup hack worked.');
+                                    await handleWrite(backupFilename);
+                                    return res();
+                                });
+                                writer.on('error', (err) => {
+                                    this.logger.error(JSON.stringify(err, null, '\t'))
+
+                                    this.logger.info("Deleting file.");
+                                    fs.unlinkSync(backupFilename);
+
+                                    return rej(err);
+                                });
                             });
-                            writer.on('error', (err) => {
-                                this.logger.error(JSON.stringify(err, null, '\t'))
-
-                                this.logger.info("Deleting file.");
-                                fs.unlinkSync(backupFilename);
-
-                                return rej(err);
-                            });
-                        })
-
+                        }
                     }
                 }
             })
