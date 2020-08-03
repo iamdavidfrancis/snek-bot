@@ -112,7 +112,7 @@ export default class TikTok implements ICommand {
                             if (finalUrl.indexOf("tiktok.com") > 0) {
                                 const encodedUrl = encodeURIComponent(finalUrl);
     
-                                const fetchUrl = `https://onlinetik.com/wp-admin/admin-ajax.php?action=wppress_tt_download&url=${encodedUrl}&key=no-watermark`
+                                const fetchUrl = `https://onlinetik.com/wp-admin/admin-ajax.php?action=wppress_tt_download&url=${encodedUrl}&key=video`
                                 const writer = fs.createWriteStream(backupFilename);
     
                                 const response = await axios({url: fetchUrl, method: 'GET', responseType: 'stream'});
