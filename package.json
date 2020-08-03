@@ -20,6 +20,7 @@
     "axios": "^0.19.2",
     "discord.js": "^12.1.1",
     "ffmpeg-static": "^4.1.1",
+    "get-urls": "^9.2.1",
     "lowdb": "^1.0.0",
     "mailgun-js": "^0.22.0",
     "otp-generator": "^1.1.0",

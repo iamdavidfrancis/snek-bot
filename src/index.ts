@@ -79,19 +79,6 @@ class Main {
         else {
             this.logger.info(`Logged in as: ${this.client.user.tag}.`);
             this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: 'LISTENING'});
-
-            // let voiceChannel = this.client.channels.cache.get(DIMMA_VOICE);
-
-            // if (voiceChannel) {
-            //     this.connection = await (voiceChannel as Discord.VoiceChannel).join();
-
-            //     let dispatcher = this.connection.play(ytdl(DIMMA_YOUTUBE, { filter: 'audioonly' }), { volume: 0.75 })
-    
-            //     dispatcher.on('finish', () => {
-            //         this.connection?.play(ytdl(DIMMA_YOUTUBE, { filter: 'audioonly' }), { volume: 0.75 });
-            //     });
-            // }
-
         }
     }
 
