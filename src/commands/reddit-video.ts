@@ -10,29 +10,6 @@ import ICommand from "../command.interface";
 
 const downloadParams = ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(title)s-%(id)s.%(ext)s"];
 
-interface YtdlRedditInfo {
-    _filename: string;
-    abr: any;
-    acodec: string;
-    age_limit: number;
-    comment_count: number;
-    dislike_count: number;
-    display_id: string;
-    ext: string;
-    extractor: string;
-    extractor_key: string;
-    format: string;
-    formats: Array<any>;
-    fps: any;
-    fulltitle: string;
-    height: number;
-    id: string;
-    like_count: number;
-    playlist: any;
-    requested_formats: Array<any>;
-    title: string;
-}
-
 export default class RedditVideo implements ICommand {
     public commandCode: string = "tt";
     public description: string = "";
@@ -86,7 +63,7 @@ export default class RedditVideo implements ICommand {
 
     private getFilename = async (url: string): Promise<string> => {
         // Figure out what the filename should be
-        const info = await new Promise<YtdlRedditInfo>((res, rej) => youtubedl.getInfo(url, downloadParams, {}, (err, opt) => !!err ? rej(err) : res(opt as any)));
+        const info = await new Promise<youtubedl.Info>((res, rej) => youtubedl.getInfo(url, downloadParams, {}, (err, opt) => !!err ? rej(err) : res(opt)));
 
         return info._filename;
     }
