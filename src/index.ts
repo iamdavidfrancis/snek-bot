@@ -97,7 +97,7 @@ class Main {
             if (message.content.indexOf("tiktok.com/") >= 0) {
                 // await message.reply("Fuck TikTok.");
                 try {
-                    // await this.tikTok.handler(message, [message.content]);
+                    await this.tikTok.handler(message, [message.content]);
                 } catch (e) {
                     await message.reply("Fuck TikTok.");
                 }
