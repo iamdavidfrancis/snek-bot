@@ -8,6 +8,8 @@ import path from "path";
 
 import ICommand from "../command.interface";
 
+const downloadParams = ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(title)s-%(id)s.%(ext)s"];
+
 interface YtdlRedditInfo {
     _filename: string;
     abr: any;
@@ -65,7 +67,7 @@ export default class RedditVideo implements ICommand {
             let filename = await this.getFilename(url);
 
             // download file
-            await this.downloadVideo(url, filename);
+            await this.downloadVideo(url);
 
             // send message
             await this.uploadToDiscord(filename, message);
@@ -84,15 +86,15 @@ export default class RedditVideo implements ICommand {
 
     private getFilename = async (url: string): Promise<string> => {
         // Figure out what the filename should be
-        const info = await new Promise<YtdlRedditInfo>((res, rej) => youtubedl.getInfo(url, ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(id)s.%(ext)s"], {}, (err, opt) => !!err ? rej(err) : res(opt as any)));
+        const info = await new Promise<YtdlRedditInfo>((res, rej) => youtubedl.getInfo(url, downloadParams, {}, (err, opt) => !!err ? rej(err) : res(opt as any)));
 
         return info._filename;
     }
 
-    private downloadVideo = async (url: string, filename: string): Promise<void> => {
+    private downloadVideo = async (url: string): Promise<void> => {
         return new Promise((resolve, reject) => {
             this.logger.info("Initiating download.");
-            youtubedl.exec(url, ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(id)s.%(ext)s"], {}, (err, out) => {
+            youtubedl.exec(url, downloadParams, {}, (err, out) => {
                 if (err) {
                     reject(err);
                 }
