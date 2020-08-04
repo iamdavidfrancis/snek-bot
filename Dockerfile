@@ -6,7 +6,7 @@ ENV APP /usr/src/APP
 
 COPY package.json /tmp/package.json
 
-RUN apk update && apk add python && rm -rf /var/cache/apk/*
+RUN apk update && apk add python ffmpeg && rm -rf /var/cache/apk/*
 
 RUN cd /tmp && npm install --loglevel=warn \
     && mkdir -p $APP \

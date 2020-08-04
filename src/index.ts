@@ -4,6 +4,7 @@ import Config from "./config";
 import Messages from "./messages";
 // import ytdl  from 'ytdl-core';
 import TikTok from "./commands/tiktok";
+import RedditVideo from "./commands/reddit-video";
 
 const DIMMA_VOICE = "704098346343858386";
 const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; //
@@ -15,6 +16,7 @@ class Main {
     private messages: Messages;
     private connection?: Discord.VoiceConnection;
     private tikTok: TikTok;
+    private redditVideo: RedditVideo;
 
     constructor() {
         this.logger = winston.createLogger({
@@ -30,6 +32,7 @@ class Main {
         this.initializeDiscord();
 
         this.tikTok = new TikTok(this.logger);
+        this.redditVideo = new RedditVideo(this.logger);
     }
 
     public start() {
@@ -94,9 +97,17 @@ class Main {
             if (message.content.indexOf("tiktok.com/") >= 0) {
                 // await message.reply("Fuck TikTok.");
                 try {
-                    await this.tikTok.handler(message, [message.content]);
+                    // await this.tikTok.handler(message, [message.content]);
                 } catch (e) {
                     await message.reply("Fuck TikTok.");
+                }
+            }
+
+            if (message.content.indexOf("reddit.com/") >= 0) {
+                try {
+                    await this.redditVideo.handler(message, [message.content]);
+                } catch (e) {
+                    this.logger.error(e);
                 }
             }
 

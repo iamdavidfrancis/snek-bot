@@ -29,7 +29,10 @@ export default class TikTok implements ICommand {
 
         const tasks: Array<Promise<void>> = [];
         for (let idx = 0; idx < urls.length; ++idx) {
-            tasks.push(this.doVideo(urls[idx], message));
+            const url = urls[idx];
+            if (url.indexOf('tiktok.com') > 0) {
+                tasks.push(this.doVideo(urls[idx], message));
+            }
         }
 
         await Promise.all(tasks)
