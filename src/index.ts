@@ -87,7 +87,7 @@ class Main {
             this.logger.info(`Logged in as: ${this.client.user.tag}.`);
             this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: 'LISTENING'});
 
-            cron.schedule('20 01 * * 6', async () => {
+            cron.schedule('30 00 * * 6', async () => {
                 const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
                 if (channel) {
                     const fileName = path.join('videos', `the-weekend.mp4`);
