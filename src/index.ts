@@ -1,10 +1,14 @@
 import Discord, { TextChannel } from "discord.js";
 import winston, { debug } from "winston";
+import * as cron from 'node-cron';
+import path from "path";
+
 import Config from "./config";
 import Messages from "./messages";
 // import ytdl  from 'ytdl-core';
 import TikTok from "./commands/tiktok";
 import RedditVideo from "./commands/reddit-video";
+
 
 const DIMMA_VOICE = "704098346343858386";
 const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; //
@@ -82,6 +86,16 @@ class Main {
         else {
             this.logger.info(`Logged in as: ${this.client.user.tag}.`);
             this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: 'LISTENING'});
+
+            cron.schedule('15 18 * * 5', async () => {
+                const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
+                if (channel) {
+                    const fileName = path.join('videos', `the-weekend.mp4`);
+                    channel.send({
+                        files: [fileName]
+                    })
+                }
+            })
         }
     }
 
