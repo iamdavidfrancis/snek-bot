@@ -2,7 +2,6 @@ import Discord from "discord.js";
 import winston from "winston";
 import youtubedl from "youtube-dl-exec";
 import fs from "fs";
-import urlRegex from "url-regex";
 import getUrls from 'get-urls';
 import path from "path";
 import axios from "axios";
