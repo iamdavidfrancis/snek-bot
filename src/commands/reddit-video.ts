@@ -1,10 +1,8 @@
 import Discord from "discord.js";
 import winston from "winston";
-import youtubedl from "youtube-dl";
+import youtubedl from "youtube-dl-exec";
 import fs from "fs";
-import urlRegex from "url-regex";
 import getUrls from 'get-urls';
-import path from "path";
 
 import ICommand from "../command.interface";
 
@@ -63,22 +61,13 @@ export default class RedditVideo implements ICommand {
 
     private getFilename = async (url: string): Promise<string> => {
         // Figure out what the filename should be
-        const info = await new Promise<youtubedl.Info>((res, rej) => youtubedl.getInfo(url, downloadParams, {}, (err, opt) => !!err ? rej(err) : res(opt)));
+        const info = await youtubedl(url, { dumpJson: true, format: "bestvideo+bestaudio/best", output: "videos/%(title)s-%(id)s.%(ext)s" });
 
         return info._filename;
     }
 
     private downloadVideo = async (url: string): Promise<void> => {
-        return new Promise((resolve, reject) => {
-            this.logger.info("Initiating download.");
-            youtubedl.exec(url, downloadParams, {}, (err, out) => {
-                if (err) {
-                    reject(err);
-                }
-
-                resolve();
-            });
-        });
+        await youtubedl(url, { format: "bestvideo+bestaudio/best", output: "videos/%(title)s-%(id)s.%(ext)s" });
     }
 
     private uploadToDiscord = async (filename: string, message: Discord.Message): Promise<void> => {
