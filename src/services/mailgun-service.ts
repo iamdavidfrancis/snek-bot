@@ -1,13 +1,19 @@
 import Config from "../config";
 
 import axios, { AxiosRequestConfig, AxiosBasicCredentials, AxiosInstance } from "axios";
-import mailgun from "mailgun-js";
+
+import formData from 'form-data';
+import Mailgun from 'mailgun.js';
+
 
 import { MailgunMember, ListMemberResponse } from './mailgun.interfaces';
 
 export default class MailgunService {
     private axios: AxiosInstance;
-    private mg = mailgun({ apiKey: Config.mailgunApiKey, domain: Config.newsletterDomain });
+    //private mg = mailgun({ apiKey: Config.mailgunApiKey, domain: Config.newsletterDomain });
+    
+    private mailgun = new Mailgun(formData as any);
+    private mg = this.mailgun.client({ username: 'api', key: Config.mailgunApiKey });
 
     private getMembersUrl: string = `lists/${Config.newsletterAddress}/members`;
 
@@ -78,15 +84,7 @@ export default class MailgunService {
             'h:X-Mailgun-Variables': JSON.stringify({ otp, to: email })
         };
 
-        return new Promise((res, rej) => {
-            this.mg.messages().send(data, (error, body) => {
-                if (error) {
-                    res(false);
-                }
-
-                res(true);
-            });
-        });
+        return this.mg.messages.create(Config.newsletterDomain, data);
     }
 
     

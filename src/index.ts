@@ -104,7 +104,7 @@ class Main {
                         content: '<@&618503327474515969> Who\'s in for trivia tomorrow night?\n:thumbsup:: Yes\n:wave:: Maybe\n:thumbsdown:: No',
                     });
                 }
-            })
+            });
 
             
         }
