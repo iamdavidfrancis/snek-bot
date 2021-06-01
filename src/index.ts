@@ -91,11 +91,22 @@ class Main {
                 const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
                 if (channel) {
                     const fileName = path.join('videos', `the-weekend.mp4`);
-                    channel.send({
+                    await channel.send({
                         files: [fileName]
                     })
                 }
+            });
+
+            cron.schedule('00 21 * * 2', async () => {
+                let testChannel = this.client.channels.cache.get('619341060232970251') as Discord.TextChannel | undefined;
+                if (testChannel) {
+                    await testChannel.send({
+                        content: '<@&618503327474515969> Who\'s in for trivia tomorrow night?\n:thumbsup:: Yes\n:wave:: Maybe\n:thumbsdown:: No',
+                    });
+                }
             })
+
+            
         }
     }
 
