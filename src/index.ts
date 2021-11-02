@@ -97,14 +97,14 @@ class Main {
                 }
             });
 
-            cron.schedule('00 21 * * 2', async () => {
+            /* cron.schedule('00 21 * * 2', async () => {
                 let testChannel = this.client.channels.cache.get('619341060232970251') as Discord.TextChannel | undefined;
-                if (testChannel && false) {
+                if (testChannel) {
                     await testChannel.send({
                         content: '<@&618503327474515969> Who\'s in for trivia tomorrow night?\n:thumbsup:: Yes\n:wave:: Maybe\n:thumbsdown:: No',
                     });
                 }
-            });
+            }); // */
 
             
         }
