@@ -7,7 +7,7 @@ ENV APP /usr/src/APP
 COPY package.json /tmp/package.json
 COPY package-lock.json /tmp/package-lock.json
 
-RUN apk update && apk add --no-cache --virtual .gyp python3 make g++
+RUN apk update && apk add --no-cache --virtual .gyp python-is-python3 python3 make g++
 
 RUN python --version
 
