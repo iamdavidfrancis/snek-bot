@@ -12,8 +12,6 @@ RUN apk update && apk add --no-cache --virtual .gyp python3 py3-pip make g++
 # Symlink python
 RUN ln -s $(which python3) /usr/bin/python
 
-RUN python --version
-
 RUN cd /tmp && npm ci --loglevel=warn \
     && mkdir -p $APP \
     && mv /tmp/node_modules $APP \
