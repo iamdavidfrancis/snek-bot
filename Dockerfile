@@ -9,7 +9,8 @@ COPY package-lock.json /tmp/package-lock.json
 
 RUN apk update && apk add --no-cache --virtual .gyp python3 py3-pip make g++
 
-RUN echo 'alias python=python3' >> ~/.bashrc
+# Symlink python
+RUN ln -s $(which python3) /usr/bin/python
 
 RUN python --version
 
