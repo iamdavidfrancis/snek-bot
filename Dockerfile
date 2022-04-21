@@ -1,4 +1,4 @@
-FROM node:current
+FROM node:current-alpine3.14
 LABEL maintainer="David Francis <david@iamdavidfrancis.com>"
 
 USER root
@@ -7,14 +7,16 @@ ENV APP /usr/src/APP
 COPY package.json /tmp/package.json
 COPY package-lock.json /tmp/package-lock.json
 
-# RUN apk update && apk add --no-cache --virtual .gyp python3 py3-pip make g++
+RUN apk update && apk add --no-cache --virtual .gyp python3 py3-pip make g++
+
+RUN alias python=python3
 
 RUN python --version
 
 RUN cd /tmp && npm ci --loglevel=warn \
     && mkdir -p $APP \
-    && mv /tmp/node_modules $APP
-#    && apk del .gyp
+    && mv /tmp/node_modules $APP \
+    && apk del .gyp
 
 COPY src $APP/src
 COPY package.json $APP
