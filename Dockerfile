@@ -11,6 +11,9 @@ RUN apk update && apk add --no-cache --virtual .gyp python3 make g++
 
 RUN npm install -g npm@8.7.0
 
+# This is dumb
+RUN alias python=python3 
+
 RUN cd /tmp && npm ci --loglevel=warn \
     && mkdir -p $APP \
     && mv /tmp/node_modules $APP \
