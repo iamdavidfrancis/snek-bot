@@ -8,7 +8,7 @@ COPY package.json /tmp/package.json
 
 RUN apk update && apk add python ffmpeg && rm -rf /var/cache/apk/*
 
-RUN cd /tmp && npm install --loglevel=warn \
+RUN cd /tmp && npm ci --loglevel=warn \
     && mkdir -p $APP \
     && mv /tmp/node_modules $APP
 
