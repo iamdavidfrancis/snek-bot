@@ -5,6 +5,7 @@ import fs from "fs";
 import getUrls from 'get-urls';
 
 import ICommand from "../command.interface";
+import { URL } from "url";
 
 const downloadParams = ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(title)s-%(id)s.%(ext)s"];
 
@@ -23,14 +24,21 @@ export default class RedditVideo implements ICommand {
             return;
         }
 
-        let urlSet = getUrls(args[0]);
+        let urlSet = getUrls(args[0], {
+            requireSchemeOrWww: true,
+            defaultProtocol: "https",
+            normalizeProtocol: true,
+            forceHttps: true
+        });
+
         let urls = Array.from(urlSet);
 
         const tasks: Array<Promise<void>> = [];
         for (let idx = 0; idx < urls.length; ++idx) {
-            const url = urls[idx];
-            if (url.indexOf('reddit.com') > 0) {
-                tasks.push(this.doVideo(urls[idx], message));
+            const url = new URL(urls[idx]);
+            
+            if (url.hostname.endsWith('reddit.com')) {
+                tasks.push(this.doVideo(url.href, message));
             }
         }
 

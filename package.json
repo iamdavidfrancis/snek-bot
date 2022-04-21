@@ -31,6 +31,7 @@
     "youtube-dl-exec": "^2.0.11"
   },
   "devDependencies": {
+    "@types/get-urls": "^9.1.3",
     "@types/lowdb": "^1.0.9",
     "@types/mailgun-js": "^0.22.4",
     "@types/node": "^13.11.1",
