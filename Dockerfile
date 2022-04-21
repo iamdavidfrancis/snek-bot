@@ -9,7 +9,7 @@ COPY package-lock.json /tmp/package-lock.json
 
 RUN apk update && apk add --no-cache --virtual .gyp python3 py3-pip make g++
 
-RUN alias python=python3
+RUN python3 --version
 
 RUN python --version
 
