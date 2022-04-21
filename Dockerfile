@@ -7,7 +7,10 @@ ENV APP /usr/src/APP
 COPY package.json /tmp/package.json
 COPY package-lock.json /tmp/package-lock.json
 
-RUN apk update && apk add --no-cache --virtual .gyp python3 py3-pip make g++
+RUN apk update && apk add --no-cache --virtual .gyp make g++
+
+# We need to keep python around for the youtube-dl
+RUN apk add --no-cache python3
 
 # Symlink python
 RUN ln -s $(which python3) /usr/bin/python
