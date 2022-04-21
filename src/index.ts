@@ -11,7 +11,7 @@ import RedditVideo from "./commands/reddit-video";
 
 
 const DIMMA_VOICE = "704098346343858386";
-const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3"; // "D:\\Stream Assets\\keys\\dimmadome.mp3"; //
+const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3";
 const DIMMA_YOUTUBE = "https://www.youtube.com/watch?v=SBxpeuxUiOA";
 
 class Main {

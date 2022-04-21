@@ -7,7 +7,7 @@ ENV APP /usr/src/APP
 COPY package.json /tmp/package.json
 COPY package-lock.json /tmp/package-lock.json
 
-RUN apk update && apk add python ffmpeg && rm -rf /var/cache/apk/*
+RUN apk update && apk add python && rm -rf /var/cache/apk/*
 
 RUN cd /tmp && npm ci --loglevel=warn \
     && mkdir -p $APP \
@@ -16,7 +16,6 @@ RUN cd /tmp && npm ci --loglevel=warn \
 COPY src $APP/src
 COPY package.json $APP
 COPY tsconfig.json $APP
-COPY dimmadome.mp3 $APP
 
 RUN mkdir $APP/videos
 
