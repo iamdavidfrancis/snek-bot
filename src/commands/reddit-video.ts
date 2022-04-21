@@ -37,7 +37,7 @@ export default class RedditVideo implements ICommand {
         for (let idx = 0; idx < urls.length; ++idx) {
             const url = new URL(urls[idx]);
             
-            if (url.hostname.endsWith('reddit.com')) {
+            if (url.hostname.endsWith('.reddit.com')) {
                 tasks.push(this.doVideo(url.href, message));
             }
         }
