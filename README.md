@@ -1,6 +1,6 @@
 # snek-bot
 
-[![Build Status](https://iamdavidfrancis.visualstudio.com/Testing/_apis/build/status/iamdavidfrancis.snek-bot?branchName=master)](https://iamdavidfrancis.visualstudio.com/Testing/_build/latest?definitionId=3&branchName=master)
+[![Build Status](https://iamdavidfrancis.visualstudio.com/Testing/_apis/build/status/iamdavidfrancis.snek-bot?branchName=main)](https://iamdavidfrancis.visualstudio.com/Testing/_build/latest?definitionId=3&branchName=main)
 
 ## What is this?
 
