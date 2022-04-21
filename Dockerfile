@@ -5,6 +5,7 @@ USER root
 ENV APP /usr/src/APP
 
 COPY package.json /tmp/package.json
+COPY package-lock.json /tmp/package-lock.json
 
 RUN apk update && apk add python ffmpeg && rm -rf /var/cache/apk/*
 
