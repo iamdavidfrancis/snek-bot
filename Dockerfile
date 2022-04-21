@@ -7,9 +7,9 @@ ENV APP /usr/src/APP
 COPY package.json /tmp/package.json
 COPY package-lock.json /tmp/package-lock.json
 
-RUN apk update && apk add --no-cache --virtual .gyp python3 py3-pip make g++
+RUN apk update && apk add --no-cache --virtual .gyp python3 make g++
 
-RUN npm install -g npm@8.7.0
+RUN python --version
 
 RUN cd /tmp && npm ci --loglevel=warn \
     && mkdir -p $APP \
