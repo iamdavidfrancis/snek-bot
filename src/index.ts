@@ -139,10 +139,10 @@ class Main {
         if (message.content.substring(0, 1) !== Config.commandPrefix) {
             // Custom tiktok link response.
             if (message.content.indexOf("tiktok.com/") >= 0) {
-                // await message.reply("Fuck TikTok.");
                 try {
                     await this.tikTok.handler(message, [message.content]);
                 } catch (e) {
+                    // this.logger.error(e);
                     await message.reply("Fuck TikTok.");
                 }
             }

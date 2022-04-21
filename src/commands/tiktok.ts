@@ -46,8 +46,11 @@ export default class TikTok implements ICommand {
         const id = urlParts[urlParts.length - 1];
         const inputFilename =  path.join('videos', `${id}.mp4`);
         // const backupFilename = path.join('videos', `${id}-backup.mp4`);
-
-        const video = await youtubedl(url, { output: inputFilename });
+        
+        const video = await youtubedl(url, { 
+            userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1",
+            output: inputFilename
+        });
         this.logger.info(JSON.stringify(video, null, 2));
 
         try {
