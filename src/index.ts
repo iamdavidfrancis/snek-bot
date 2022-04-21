@@ -97,6 +97,25 @@ class Main {
                 }
             });
 
+            cron.schedule('30 12 * * 3', async () => {
+                const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
+                if (channel) {
+                    const fileName = path.join('videos', `itiswednesdaymydudescampfire.mp4`);
+                    await channel.send({
+                        files: [fileName]
+                    })
+                }
+            });
+
+            cron.schedule('30 12 * * *', async () => {
+                const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
+                if (channel) {
+                    await channel.send({
+                        content: "Don't forget to take your meds!"
+                    })
+                }
+            });
+
             /* cron.schedule('00 21 * * 2', async () => {
                 let testChannel = this.client.channels.cache.get('619341060232970251') as Discord.TextChannel | undefined;
                 if (testChannel) {
