@@ -19,7 +19,7 @@ COPY dimmadome.mp3 $APP
 
 RUN mkdir $APP/videos
 
-COPY videos/* $APP/videos
+COPY videos/* $APP/videos/
 
 WORKDIR $APP
 
