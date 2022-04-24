@@ -1,8 +1,7 @@
-import lowdb from "lowdb";
-import FileAsync from "lowdb/adapters/FileAsync";
+import { Low, JSONFile } from "lowdb";
 
-import Config from '../config';
-import IDBSchema, { IPendingInvite, SnekMember } from './db-schema.interface';
+import Config from '../config.js';
+import IDBSchema, { IPendingInvite, SnekMember } from './db-schema.interface.js';
 
 export enum InvitationDBStatus {
     Uninvited,
@@ -18,60 +17,61 @@ const MAX_INVITE_ATTEMPTS = 5;
 
 export default class DBService {
 
-    private db!: lowdb.LowdbAsync<IDBSchema>;
+    private db!: Low<IDBSchema>;
     
     public initialize = async () => {
-        const adapter = new FileAsync<IDBSchema>(Config.databasePath);
-        this.db = await lowdb(adapter);
+        const adapter = new JSONFile<IDBSchema>(Config.databasePath);
+        this.db = new Low(adapter);
 
-        this.db.defaults({ pendingInvites: [], users: [] }).value();
+        await this.db.read();
+
+        this.db.data ||= { pendingInvites: [], users: [] };
+        await this.db.write()
     }
 
     public getSnekById = async (userid: string): Promise<SnekMember|undefined> => {
         await this.initializeGuard();
 
         return this.db
-            .get('users')
-            .find({ userid })
-            .value();
+            .data
+            ?.users
+            .find((u) => u.userid == userid);
     }
 
     public getSnekByName = async (realname: string): Promise<SnekMember|undefined> => {
         await this.initializeGuard();
 
         return this.db
-            .get('users')
-            .find({ realname: realname.toLowerCase() })
-            .value();
+            .data
+            ?.users
+            .find((u) => u.realname === realname.toLowerCase());
     }
 
     public addSnek = async (userid: string, realname: string): Promise<void> => {
         await this.initializeGuard();
 
         const existing = await this.db
-            .get("users")
-            .find({ userid })
-            .value();
+            .data
+            ?.users
+            .find((u) => u.userid == userid);
 
         if (!!existing) {
-            await this.db
-                .get("users")
-                .find({ userid })
-                .assign({
-                    userid,
-                    realname: realname.toLowerCase()
-                })
-                .write();
+            existing.realname = realname.toLowerCase();
+            existing.userid = userid;
+
+            await this.db.write();
         }
         else
         {
-            await this.db
-                .get("users")
+            this.db
+                .data
+                ?.users
                 .push({
                     userid,
                     realname: realname.toLowerCase()
-                })
-                .write();
+                });
+
+            await this.db.write();
         }
             
     }
@@ -80,9 +80,9 @@ export default class DBService {
         await this.initializeGuard();
 
         var existingInvite = this.db
-            .get('pendingInvites')
-            .find({ email })
-            .value();
+            .data
+            ?.pendingInvites
+            .find((pi) => pi.email === email);
 
         if (!existingInvite) {
             return InvitationDBStatus.Uninvited;
@@ -104,10 +104,16 @@ export default class DBService {
     public getInvitation = async (email: string): Promise<IPendingInvite> => {
         await this.initializeGuard();
 
-        return this.db
-            .get('pendingInvites')
-            .find({ email })
-            .value();
+        const invite = this.db
+            .data
+            ?.pendingInvites
+            .find((pi) => pi.email === email);
+
+        if (!invite) {
+            throw "Failed to find invitation";
+        }
+
+        return invite;
     }
 
     public createInvitation = async (email: string, otp: string, expiration?: Date): Promise<InvitationDBStatus> => {
@@ -120,24 +126,21 @@ export default class DBService {
                 return inviteStatus;
             case InvitationDBStatus.Unredeemed:
                 var existingInvite = this.db
-                    .get('pendingInvites')
-                    .find({ email })
-                    .value();
+                    .data
+                    ?.pendingInvites
+                    .find((pi) => pi.email === email)!;
                     
-                await this.db
-                    .get("pendingInvites")
-                    .find({ email })
-                    .assign({
-                        otp,
-                        inviteExpirationTime: expiration,
-                        inviteSendCount: existingInvite.inviteSendCount++
-                    })
-                    .write();
+                existingInvite.otp = otp,
+                existingInvite.inviteExpirationTime = expiration;
+                existingInvite.inviteSendCount = existingInvite.inviteSendCount++;
+
+                await this.db.write();
                 
                 return InvitationDBStatus.Invited;
             default:
-                await this.db
-                    .get("pendingInvites")
+                this.db
+                    .data
+                    ?.pendingInvites
                     .push({
                         email,
                         otp,
@@ -145,8 +148,9 @@ export default class DBService {
                         inviteExpirationTime: expiration,
                         inviteSendCount: 1,
                         redeemed: false
-                    })
-                    .write();
+                    });
+
+                await this.db.write();
                 
                 return InvitationDBStatus.Invited;
         }
@@ -159,11 +163,15 @@ export default class DBService {
             return inviteStatus;
         }
 
-        await this.db
-            .get("pendingInvites")
-            .find({ email })
-            .assign({ subscribed, redeemed: true })
-            .write();
+        const existing = this.db
+            .data
+            ?.pendingInvites
+            .find((pi) => pi.email === email)!;
+
+        existing.subscribed = subscribed;
+        existing.redeemed = true;
+
+        await this.db.write();
 
         return subscribed ? 
             InvitationDBStatus.Subscribed :
@@ -177,11 +185,15 @@ export default class DBService {
             return inviteStatus;
         }
 
-        await this.db
-            .get("pendingInvites")
-            .find({ email })
-            .assign({ subscribed: true, redeemed: true })
-            .write();
+        const existing = await this.db
+            .data
+            ?.pendingInvites
+            .find((pi) => pi.email === email)!;
+
+            existing.subscribed = true;
+            existing.redeemed = true;
+
+            await this.db.write();
 
         return InvitationDBStatus.Subscribed;
     }

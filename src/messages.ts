@@ -1,16 +1,16 @@
-import Config from "./config";
+import Config from "./config.js";
 import Discord from "discord.js";
 import winston from "winston";
 
-import ICommand from "./command.interface";
-import DiceRoller from './commands/roll';
-import Plagueis from './commands/plagueis';
-import NavySeal from './commands/navy-seal';
-import Newsletter from './commands/newsletter';
-import Bash from './commands/bash';
-import Dimmadome from './commands/dimma';
-import WhoIs from './commands/whois';
-import IAm from './commands/iam';
+import ICommand from "./command.interface.js";
+import DiceRoller from './commands/roll.js';
+import Plagueis from './commands/plagueis.js';
+import NavySeal from './commands/navy-seal.js';
+import Newsletter from './commands/newsletter.js';
+import Bash from './commands/bash.js';
+import Dimmadome from './commands/dimma.js';
+import WhoIs from './commands/whois.js';
+import IAm from './commands/iam.js';
 
 export default class Messages {
     private commands = new Discord.Collection<string, ICommand>();

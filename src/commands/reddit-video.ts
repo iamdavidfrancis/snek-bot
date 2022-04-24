@@ -4,7 +4,7 @@ import youtubedl from "youtube-dl-exec";
 import fs from "fs";
 import getUrls from 'get-urls';
 
-import ICommand from "../command.interface";
+import ICommand from "../command.interface.js";
 import { URL } from "url";
 
 const downloadParams = ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(title)s-%(id)s.%(ext)s"];
@@ -58,7 +58,7 @@ export default class RedditVideo implements ICommand {
             // delete file
             this.logger.info("Deleting file.");
             fs.unlinkSync(filename);
-        } catch (e) {
+        } catch (e: any) {
             if (e.stderr === "ERROR: No media found") {
                 // Not a video. No-op
             } else {
@@ -86,7 +86,7 @@ export default class RedditVideo implements ICommand {
                 content: "here's that reddit video you posted.",
                 files: [filename]
             });
-        } catch (e) {
+        } catch (e: any) {
             if (e && e.httpStatus === 413) {
                 await message.reply({
                     content: "I tried to upload the reddit video, but it was too big. Oh well."

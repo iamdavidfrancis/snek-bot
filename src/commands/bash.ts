@@ -1,8 +1,8 @@
 import Discord from "discord.js";
 
-import Config from "../config";
-import ICommand from "../command.interface";
-import * as bash from './bash.org.json';
+import Config from "../config.js";
+import ICommand from "../command.interface.js";
+import { quotes } from './bash.org.resources.js';
 import winston from "winston";
 
 
@@ -17,12 +17,12 @@ export default class Bash implements ICommand {
     public description: string = "Random bash.org post.";
     public allowInline: boolean = true;
     public handler = async (message: Discord.Message): Promise<void> => {
-        const max = bash.quotes.length - 1;
+        const max = quotes.length - 1;
         const rand = Math.round(Math.random() * max);
 
         this.logger.info(`Max: ${max}, Idx: ${rand}`);
 
-        const entry = bash.quotes[rand];
+        const entry = quotes[rand];
         
         const response: Discord.MessageEmbed = new Discord.MessageEmbed();
 

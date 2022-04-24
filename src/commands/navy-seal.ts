@@ -1,5 +1,5 @@
 import Discord from "discord.js";
-import ICommand from "../command.interface";
+import ICommand from "../command.interface.js";
 
 export default class NavySeal implements ICommand {
     public commandCode: string = "navy-seal";

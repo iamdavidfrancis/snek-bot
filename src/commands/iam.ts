@@ -1,9 +1,9 @@
 import Discord from "discord.js";
-import Config from "../config"
+import Config from "../config.js"
 import winston from "winston";
-import ICommand from "../command.interface";
-import DBService from "../services/db-service";
-import ServiceFactory from "../services/serviceFactory";
+import ICommand from "../command.interface.js";
+import DBService from "../services/db-service.js";
+import ServiceFactory from "../services/serviceFactory.js";
 
 
 

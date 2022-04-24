@@ -1,13 +1,13 @@
 import Discord, { TextChannel } from "discord.js";
 import winston, { debug } from "winston";
-import * as cron from 'node-cron';
+import cron from 'node-cron';
 import path from "path";
 
-import Config from "./config";
-import Messages from "./messages";
+import Config from "./config.js";
+import Messages from "./messages.js";
 // import ytdl  from 'ytdl-core';
-import TikTok from "./commands/tiktok";
-import RedditVideo from "./commands/reddit-video";
+import TikTok from "./commands/tiktok.js";
+import RedditVideo from "./commands/reddit-video.js";
 
 
 const DIMMA_VOICE = "704098346343858386";
@@ -111,10 +111,17 @@ class Main {
                 const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
                 if (channel) {
                     await channel.send({
-                        content: "Don't forget to take your meds!"
+                        content: "Hey <@&967801221031272498>, don't forget to take your meds today!"
                     })
                 }
             });
+
+            const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
+            if (channel) {
+                await channel.send({
+                    content: "Hey <@&967801221031272498>, don't forget to take your meds today!"
+                })
+            }
 
             /* cron.schedule('00 21 * * 2', async () => {
                 let testChannel = this.client.channels.cache.get('619341060232970251') as Discord.TextChannel | undefined;

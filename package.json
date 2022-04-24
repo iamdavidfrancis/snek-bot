@@ -1,12 +1,13 @@
 {
   "name": "snek-bot",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A bot for the snek discord server.",
   "repository": {
     "type": "git",
     "url": "https://github.com/iamdavidfrancis/snek-bot.git"
   },
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
+  "type": "module",
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
@@ -22,7 +23,7 @@
     "form-data": "^4.0.0",
     "get-urls": "^11.0.0",
     "lodash": "^4.17.21",
-    "lowdb": "^1.0.0",
+    "lowdb": "^3.0.0",
     "mailgun.js": "^3.3.2",
     "minimist": "^1.2.6",
     "node-cron": "^3.0.0",
@@ -37,6 +38,9 @@
     "@types/node": "^13.11.1",
     "@types/ws": "^7.2.3",
     "@types/youtube-dl": "^1.12.2",
-    "typescript": "^3.8.3"
+    "typescript": "^4.7.0-beta"
+  },
+  "engines": {
+    "node": ">=14.16"
   }
 }

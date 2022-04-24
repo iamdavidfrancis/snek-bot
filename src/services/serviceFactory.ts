@@ -1,5 +1,5 @@
-import MailgunService from "./mailgun-service";
-import DBService from "./db-service";
+import MailgunService from "./mailgun-service.js";
+import DBService from "./db-service.js"; 
 
 export default class ServiceFactory {
     private static dbService: DBService;

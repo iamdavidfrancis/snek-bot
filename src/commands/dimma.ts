@@ -1,5 +1,5 @@
 import Discord from "discord.js";
-import ICommand from "../command.interface";
+import ICommand from "../command.interface.js";
 
 export default class Dimmadome implements ICommand {
     private isConnected = false;

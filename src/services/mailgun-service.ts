@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config from "../config.js";
 
 import axios, { AxiosRequestConfig, AxiosBasicCredentials, AxiosInstance } from "axios";
 
@@ -6,13 +6,12 @@ import formData from 'form-data';
 import Mailgun from 'mailgun.js';
 
 
-import { MailgunMember, ListMemberResponse } from './mailgun.interfaces';
+import { MailgunMember, ListMemberResponse } from './mailgun.interfaces.js';
 
 export default class MailgunService {
     private axios: AxiosInstance;
     //private mg = mailgun({ apiKey: Config.mailgunApiKey, domain: Config.newsletterDomain });
-    
-    private mailgun = new Mailgun(formData as any);
+    private mailgun = new (Mailgun as any)(formData as any);
     private mg = this.mailgun.client({ username: 'api', key: Config.mailgunApiKey });
 
     private getMembersUrl: string = `lists/${Config.newsletterAddress}/members`;
@@ -23,7 +22,7 @@ export default class MailgunService {
             password: Config.mailgunApiKey
         }
         
-        this.axios = axios.create({
+        this.axios = (axios as any).create({
             auth,
             baseURL: 'https://api.mailgun.net/v3/',
             timeout: 1000
@@ -42,7 +41,7 @@ export default class MailgunService {
 
             return false;
         }
-        catch (error) {
+        catch (error: any) {
             if (error?.response?.status === 404) {
                 return false;
             }

@@ -1,7 +1,7 @@
 import Discord from "discord.js";
-import Config from "../config"
+import Config from "../config.js"
 import winston from "winston";
-import ICommand from "../command.interface";
+import ICommand from "../command.interface.js";
 
 interface Results {
     numDice: number;

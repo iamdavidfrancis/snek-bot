@@ -1,12 +1,13 @@
 import Discord from "discord.js";
 import otpGenerator from 'otp-generator';
+import { IPendingInvite } from "../services/db-schema.interface.js";
 
-import ICommand from "../command.interface";
-import Config from "../config";
+import ICommand from "../command.interface.js";
+import Config from "../config.js";
 
-import DBService, {InvitationDBStatus} from "../services/db-service";
-import MailgunService from "../services/mailgun-service";
-import ServiceFactory from "../services/serviceFactory";
+import DBService, {InvitationDBStatus} from "../services/db-service.js";
+import MailgunService from "../services/mailgun-service.js";
+import ServiceFactory from "../services/serviceFactory.js";
 
 type Handler = (message: Discord.Message, args: Array<string>) => Promise<void>;
 
@@ -118,7 +119,14 @@ export default class Newsletter implements ICommand {
                 return;
             }
 
-            const pendingInvite = await this.dbService.getInvitation(email);
+            let pendingInvite: IPendingInvite;
+            try {
+                pendingInvite = await this.dbService.getInvitation(email);
+            } catch (e) {
+                // Couldn't find it.
+                return;
+            }
+            
 
             if (otp !== pendingInvite.otp) {
                 await message.channel.send("The submitted code is not valid. Please send the code exactly as it appears in the email.");
