@@ -116,13 +116,6 @@ class Main {
                 }
             });
 
-            const channel = this.client.channels.cache.get('451938574208729088') as Discord.TextChannel | undefined;
-            if (channel) {
-                await channel.send({
-                    content: "Hey <@&967801221031272498>, don't forget to take your meds today!"
-                })
-            }
-
             /* cron.schedule('00 21 * * 2', async () => {
                 let testChannel = this.client.channels.cache.get('619341060232970251') as Discord.TextChannel | undefined;
                 if (testChannel) {

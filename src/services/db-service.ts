@@ -25,8 +25,10 @@ export default class DBService {
 
         await this.db.read();
 
-        this.db.data ||= { pendingInvites: [], users: [] };
-        await this.db.write()
+        if (this.db.data?.users == null) {
+            this.db.data ||= { pendingInvites: [], users: [] };
+            await this.db.write();
+        }
     }
 
     public getSnekById = async (userid: string): Promise<SnekMember|undefined> => {

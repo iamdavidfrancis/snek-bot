@@ -31,7 +31,7 @@ export default class WhoIs implements ICommand {
 
         if (searchTerm.startsWith('<@')) {
             isAtMention = true;
-            var regex = searchTerm.match(/<@!([0-9]+?)>/);
+            var regex = searchTerm.match(/<@!*([0-9]+?)>/);
 
             if (!regex || regex.length !== 2 || !regex[1]) {
                 await message.reply("Can't understand the @mention.");
