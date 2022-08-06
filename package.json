@@ -27,7 +27,7 @@
     "mailgun.js": "^3.3.2",
     "minimist": "^1.2.6",
     "node-cron": "^3.0.0",
-    "otp-generator": "^1.1.0",
+    "otp-generator": "^3.0.0",
     "winston": "^3.7.2",
     "youtube-dl-exec": "^2.0.11"
   },
