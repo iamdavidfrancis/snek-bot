@@ -164,6 +164,15 @@ class Main {
                 }
             }
 
+            if (message.content.indexOf("//twitter.com") >= 0) {
+                try {
+                    await message.reply("Fuck twitter. At least use vxtwitter so the previews work.");
+                    
+                } catch (e) {
+                    this.logger.error(e);
+                }
+            }
+
             if (message.content.indexOf("Fuck you, robot") >= 0) {
                 await message.reply("No, fuck you.", { files: ["https://i.imgur.com/84MOMYV.png"]});
             }
