@@ -110,12 +110,14 @@ class Main {
             cron.schedule('00 09 * * *', async () => {
                 const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
                 if (channel) {
+                    const fileName = path.join('videos', `drugs.mp4`);
                     await channel.send({
-                        content: "Hey <@&967801221031272498>, don't forget to take your meds today!"
+                        content: "Hey <@&967801221031272498>, don't forget to take your meds today!",
+                        files: [fileName]
                     })
                 }
             });
-
+            
             // cron.schedule('30 12 * * *', async () => {
             //     const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
             //     if (channel) {
