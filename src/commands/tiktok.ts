@@ -35,7 +35,7 @@ export default class TikTok implements ICommand {
         const tasks: Array<Promise<void>> = [];
         for (let idx = 0; idx < urls.length; ++idx) {
             const url = new URL(urls[idx]);
-            if (url.hostname.endsWith('tiktok.com')) {
+            if (url.hostname == 'tiktok.com') {
                 tasks.push(this.doVxTiktok(url.href, message));
             }
         }
