@@ -107,6 +107,17 @@ class Main {
                 }
             });
 
+            // Post the Mean Girls / FMA meme on 10/3
+            cron.schedule('30 12 3 10 *', async () => {
+                const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
+                if (channel) {
+                    const fileName = path.join('videos', `oct3.jpg`);
+                    await channel.send({
+                        files: [fileName]
+                    })
+                }
+            })
+
             cron.schedule('00 09 * * *', async () => {
                 const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
                 if (channel) {

@@ -35,12 +35,18 @@ export default class TikTok implements ICommand {
         const tasks: Array<Promise<void>> = [];
         for (let idx = 0; idx < urls.length; ++idx) {
             const url = new URL(urls[idx]);
-            if (url.hostname.endsWith('.tiktok.com')) {
-                tasks.push(this.doVideo(url.href, message));
+            if (url.hostname.endsWith('tiktok.com')) {
+                tasks.push(this.doVxTiktok(url.href, message));
             }
         }
 
         await Promise.all(tasks)
+    }
+
+    private doVxTiktok = async (url: string, message: Discord.Message): Promise<void> => {
+        const vxUrl = url.replace("tiktok", "vxtiktok");
+
+        await message.reply(vxUrl);
     }
 
     private doVideo = async (url: string, message: Discord.Message): Promise<void> => {
