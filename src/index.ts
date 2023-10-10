@@ -88,35 +88,22 @@ class Main {
             this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: 'LISTENING'});
 
             cron.schedule('30 00 * * 6', async () => {
-                const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
-                if (channel) {
-                    const fileName = path.join('videos', `the-weekend.mp4`);
-                    await channel.send({
-                        files: [fileName]
-                    })
-                }
+                await this.sendFile(`the-weekend.mp4`);
             });
 
             cron.schedule('30 12 * * 3', async () => {
-                const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
-                if (channel) {
-                    const fileName = path.join('videos', `itiswednesdaymydudescampfire.mp4`);
-                    await channel.send({
-                        files: [fileName]
-                    })
-                }
+                await this.sendFile(`itiswednesdaymydudescampfire.mp4`);
             });
 
             // Post the Mean Girls / FMA meme on 10/3
             cron.schedule('30 12 3 10 *', async () => {
-                const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
-                if (channel) {
-                    const fileName = path.join('videos', `oct3.jpg`);
-                    await channel.send({
-                        files: [fileName]
-                    })
-                }
-            })
+                await this.sendFile(`oct3.jpg`);
+            });
+
+            // Fuck Columbus
+            cron.schedule('30 12 8-14 10 1', async () => {
+                await this.sendFile(`columbus.jpg`);
+            });
 
             cron.schedule('00 09 * * *', async () => {
                 const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
@@ -129,15 +116,6 @@ class Main {
                     })
                 }
             });
-            
-            // cron.schedule('30 12 * * *', async () => {
-            //     const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
-            //     if (channel) {
-            //         await channel.send({
-            //             content: "Hey <@&967801221031272498>, don't forget to take your meds today!"
-            //         })
-            //     }
-            // });
 
             /* cron.schedule('00 21 * * 2', async () => {
                 let testChannel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
@@ -149,6 +127,16 @@ class Main {
             }); // */
 
             
+        }
+    }
+
+    private sendFile = async (filename: string): Promise<void> => {
+        const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
+        if (channel) {
+            const fileName = path.join('videos', filename);
+            await channel.send({
+                files: [fileName]
+            })
         }
     }
 
