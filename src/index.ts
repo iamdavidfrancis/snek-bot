@@ -7,6 +7,8 @@ import Config from "./config.js";
 import Messages from "./messages.js";
 // import ytdl  from 'ytdl-core';
 import TikTok from "./commands/tiktok.js";
+import Twitter from "./commands/twitter.js";
+
 import RedditVideo from "./commands/reddit-video.js";
 
 
@@ -20,6 +22,7 @@ class Main {
     private messages: Messages;
     private connection?: Discord.VoiceConnection;
     private tikTok: TikTok;
+    private twitter: Twitter;
     private redditVideo: RedditVideo;
 
     constructor() {
@@ -36,6 +39,7 @@ class Main {
         this.initializeDiscord();
 
         this.tikTok = new TikTok(this.logger);
+        this.twitter = new Twitter(this.logger);
         this.redditVideo = new RedditVideo(this.logger);
     }
 
@@ -161,6 +165,15 @@ class Main {
             if (message.content.indexOf("reddit.com/") >= 0) {
                 try {
                     await this.redditVideo.handler(message, [message.content]);
+                } catch (e) {
+                    this.logger.error(e);
+                }
+            }
+
+            if (message.content.indexOf("twitter.com") >= 0 || message.content.indexOf("x.com") >= 0)
+            {
+                try {
+                    await this.twitter.handler(message, [message.content]);
                 } catch (e) {
                     this.logger.error(e);
                 }
