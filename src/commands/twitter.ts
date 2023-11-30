@@ -33,7 +33,7 @@ export default class Twitter implements ICommand {
         const tasks: Array<Promise<void>> = [];
         for (let idx = 0; idx < urls.length; ++idx) {
             const url = new URL(urls[idx]);
-            if (url.hostname == 'tiktok.com' || url.hostname == "x.com") {
+            if (url.hostname == 'twitter.com' || url.hostname == "x.com") {
                 tasks.push(this.doVxTwitter(url.href, message));
             }
         }
