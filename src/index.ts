@@ -109,6 +109,15 @@ class Main {
                 await this.sendFile(`columbus.jpg`);
             });
 
+            cron.schedule('0 9 8 11 *', async () => {
+                const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
+                if (channel) {
+                    await channel.send({
+                        content: "It's November 8th.\nhttps://www.youtube.com/watch?v=_zUh7tWXK1I",
+                    });
+                }
+            })
+
             cron.schedule('00 09 * * *', async () => {
                 const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
                 if (channel) {
