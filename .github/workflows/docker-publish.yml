@@ -14,11 +14,9 @@ on:
     branches: [ "main" ]
 
 env:
-  # Use docker.io for Docker Hub if empty
   REGISTRY: 'dafranctest.azurecr.io'
   # github.repository as <account>/<repo>
   IMAGE_NAME: 'snek-bot'
-  LATEST_TAG: 'latest'
   VERSION: "364.${{ github.run_number }}.${{ github.run_attempt }}"
 
 
@@ -64,7 +62,7 @@ jobs:
         with:
           inlineScript: |
             $token = az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken
-            Write-Host "::set-output name=AcrToken::$($token)"
+            "AcrToken=$($token)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           azPSVersion: latest
           
       # Login against a Docker registry except on PR
