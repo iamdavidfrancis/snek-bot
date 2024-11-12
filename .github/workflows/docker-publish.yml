@@ -63,7 +63,7 @@ jobs:
           inlineScript: |
             $token = az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken
             "AcrToken=$($token)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-            azcliversion: latest
+          azcliversion: latest
           
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
