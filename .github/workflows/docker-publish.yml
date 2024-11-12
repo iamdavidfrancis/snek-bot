@@ -61,7 +61,7 @@ jobs:
         uses: Azure/cli@v2
         with:
           inlineScript: |
-            TOKEN = az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken
+            TOKEN=$(az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken)
             echo "AcrToken=$TOKEN" >> $GITHUB_OUTPUT
           azcliversion: latest
           
