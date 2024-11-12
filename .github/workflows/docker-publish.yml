@@ -64,7 +64,8 @@ jobs:
         with:
           inlineScript: |
             $token = az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken
-            Write-Host "::set-output name=AcrToken::$($token)"    
+            Write-Host "::set-output name=AcrToken::$($token)"
+          azPSVersion: latest
           
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
