@@ -61,8 +61,8 @@ jobs:
         uses: Azure/cli@v2
         with:
           inlineScript: |
-            $token = az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken
-            "AcrToken=$($token)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+            TOKEN = az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken
+            echo "AcrToken=$TOKEN" >> $GITHUB_OUTPUT
           azcliversion: latest
           
       # Login against a Docker registry except on PR
