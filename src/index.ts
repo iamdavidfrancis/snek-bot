@@ -121,7 +121,10 @@ class Main {
             cron.schedule('00 09 * * *', async () => {
                 const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
                 if (channel) {
-                    const file = Math.floor(Math.random() * 2) == 0 ? 'drugs.mp4' : 'pills.mp4';
+                    const videos = ['drugs.mp4', 'pills.mp4', 'pills2.mov'];
+
+                    const file = videos.at(Math.floor(videos.length * Math.random())) || 'drugs.mp4';
+
                     const fileName = path.join('videos', file);
                     await channel.send({
                         content: "Hey <@&967801221031272498>, don't forget to take your meds today!",
