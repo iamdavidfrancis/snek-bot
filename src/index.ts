@@ -165,14 +165,14 @@ class Main {
         // Only handle commands with our prefix.
         if (message.content.substring(0, 1) !== Config.commandPrefix) {
             // Custom tiktok link response.
-            if (message.content.indexOf("tiktok.com/") >= 0) {
-                try {
-                    await this.tikTok.handler(message, [message.content]);
-                } catch (e) {
-                    // this.logger.error(e);
-                    await message.reply("Fuck TikTok.");
-                }
-            }
+            // if (message.content.indexOf("tiktok.com/") >= 0) {
+            //     try {
+            //         await this.tikTok.handler(message, [message.content]);
+            //     } catch (e) {
+            //         // this.logger.error(e);
+            //         await message.reply("Fuck TikTok.");
+            //     }
+            // }
 
             if (message.content.indexOf("reddit.com/") >= 0) {
                 try {
