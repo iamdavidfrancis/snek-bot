@@ -1,24 +1,28 @@
-import MailgunService from "./mailgun-service.js";
-import DBService from "./db-service.js"; 
+import DBService from './db-service.js';
+import MailgunService from './mailgun-service.js';
 
 export default class ServiceFactory {
-    private static dbService: DBService;
-    private static mailgunService: MailgunService;
+  private static dbService: DBService;
 
-    public static get DBServiceInstance(): DBService {
-        if (!ServiceFactory.dbService) {
-            ServiceFactory.dbService = new DBService();
-            ServiceFactory.dbService.initialize();
-        }
+  private static mailgunService: MailgunService;
 
-        return ServiceFactory.dbService;
+  public static get DBServiceInstance(): DBService {
+    if (!ServiceFactory.dbService) {
+      ServiceFactory.dbService = new DBService();
+      // eslint-disable-next-line promise/prefer-await-to-then, promise/prefer-await-to-callbacks
+      ServiceFactory.dbService.initialize().catch((error) => {
+        console.error('Failed to initialize DBService:', error);
+      });
     }
 
-    public static get MailgunServiceInstance(): MailgunService {
-        if (!ServiceFactory.mailgunService) {
-            ServiceFactory.mailgunService = new MailgunService();
-        }
+    return ServiceFactory.dbService;
+  }
 
-        return ServiceFactory.mailgunService;
+  public static get MailgunServiceInstance(): MailgunService {
+    if (!ServiceFactory.mailgunService) {
+      ServiceFactory.mailgunService = new MailgunService();
     }
+
+    return ServiceFactory.mailgunService;
+  }
 }

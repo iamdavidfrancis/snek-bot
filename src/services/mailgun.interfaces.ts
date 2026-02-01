@@ -1,11 +1,11 @@
 export interface ListMemberResponse {
-    member: MailgunMember;
+  member: MailgunMember;
 }
 
 export interface MailgunMember {
-    address: string;
-    name?: string;
-    subscribed: boolean;
-    vars?: any;
-    upsert?: boolean;
+  address: string;
+  name?: string;
+  subscribed: boolean;
+  upsert?: boolean;
+  vars?: any;
 }

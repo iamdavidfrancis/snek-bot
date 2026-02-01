@@ -4,7 +4,7 @@
 
 ## What is this?
 
-I got bored and built a bot for a discord server I run. It's wonky, but it works. 
+I got bored and built a bot for a discord server I run. It's wonky, but it works.
 
 ## How do I contribute?
 

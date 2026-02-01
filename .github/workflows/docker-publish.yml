@@ -7,18 +7,17 @@ name: Docker
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: ['v*.*.*']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 env:
   REGISTRY: 'dafranctest.azurecr.io'
   # github.repository as <account>/<repo>
   IMAGE_NAME: 'snek-bot'
-  VERSION: "364.${{ github.run_number }}.${{ github.run_attempt }}"
-
+  VERSION: '364.${{ github.run_number }}.${{ github.run_attempt }}'
 
 jobs:
   build:
@@ -64,7 +63,7 @@ jobs:
             TOKEN=$(az acr login --name ${{ env.REGISTRY }} --expose-token --output tsv --query accessToken)
             echo "AcrToken=$TOKEN" >> $GITHUB_OUTPUT
           azcliversion: latest
-          
+
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}

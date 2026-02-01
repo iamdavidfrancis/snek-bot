@@ -11,8 +11,10 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
+    "lint": "eslint --ext .ts --format=pretty src",
     "start": "node dist/index.js",
-    "debug": "node --inspect dist/index.js"
+    "debug": "node --inspect dist/index.js",
+    "format": "eslint --ext .ts --fix --format=pretty src"
   },
   "author": "David Francis",
   "license": "MIT",
@@ -41,6 +43,9 @@
     "@types/node-cron": "^3.0.11",
     "@types/ws": "^7.2.3",
     "@types/youtube-dl": "^1.12.2",
+    "eslint": "^9.39.2",
+    "eslint-config-neon": "^0.3.2",
+    "eslint-formatter-pretty": "^7.0.0",
     "typescript": "^5.9.3"
   },
   "engines": {

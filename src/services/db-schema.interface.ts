@@ -1,26 +1,26 @@
 export default interface IDBSchema {
-    pendingInvites: Array<IPendingInvite>;
-    users: Array<SnekMember>;
+  pendingInvites: IPendingInvite[];
+  users: SnekMember[];
 }
 
 export interface SnekMember {
-    userid: string;
-    realname: string;
+  realname: string;
+  userid: string;
 }
 
 export interface IPendingInvite {
-    email: string;
-    otp: string;
-    inviteSentTime?: Date | undefined;
-    inviteExpirationTime: Date | undefined;
-    inviteSendCount: number;
-    redeemed?: boolean | undefined;
-    subscribed?: boolean;
+  email: string;
+  inviteExpirationTime: Date | undefined;
+  inviteSendCount: number;
+  inviteSentTime?: Date | undefined;
+  otp: string;
+  redeemed?: boolean | undefined;
+  subscribed?: boolean;
 }
 
 export interface ICustomCommand {
-    commandCode: string;
-    description?: string | undefined;
-    respondText: string;
-    approved?: boolean | undefined;
+  approved?: boolean | undefined;
+  commandCode: string;
+  description?: string | undefined;
+  respondText: string;
 }

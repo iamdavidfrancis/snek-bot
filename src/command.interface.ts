@@ -1,9 +1,9 @@
-import { Message } from "discord.js"
+import type { Message } from 'discord.js';
 
 export default interface ICommand {
-    commandCode: string;
-    description: string;
-    usage?: string;
-    handler: (message: Message, args: Array<string>) => Promise<void>;
-    allowInline: boolean;
-};
+  allowInline: boolean;
+  commandCode: string;
+  description: string;
+  handler(message: Message, args: string[]): Promise<void>;
+  usage?: string;
+}
