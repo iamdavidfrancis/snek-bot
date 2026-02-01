@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import { ChannelType, Collection, EmbedBuilder, Message } from "discord.js";
 import otpGenerator from 'otp-generator';
 import { IPendingInvite } from "../services/db-schema.interface.js";
 
@@ -9,7 +9,7 @@ import DBService, {InvitationDBStatus} from "../services/db-service.js";
 import MailgunService from "../services/mailgun-service.js";
 import ServiceFactory from "../services/serviceFactory.js";
 
-type Handler = (message: Discord.Message, args: Array<string>) => Promise<void>;
+type Handler = (message: Message, args: Array<string>) => Promise<void>;
 
 export default class Newsletter implements ICommand {
     public commandCode: string = "plex-newsletter";
@@ -17,7 +17,7 @@ export default class Newsletter implements ICommand {
     public usage: string = `Only works in DMs. Subscribe to the newsletter with \`${Config.commandPrefix}plex-newsletter subscribe {email}\`. Type \`${Config.commandPrefix}plex-newsletter help\` for more information.`;
     public allowInline: boolean = false;
 
-    private subCommands = new Discord.Collection<string, Handler>();
+    private subCommands = new Collection<string, Handler>();
 
     private dbService: DBService = ServiceFactory.DBServiceInstance;
     private mailgunService: MailgunService = ServiceFactory.MailgunServiceInstance;
@@ -30,8 +30,8 @@ export default class Newsletter implements ICommand {
         this.dbService.initialize();
     }
 
-    public handler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
-        if (message.channel.type !== "dm") {
+    public handler = async (message: Message, args: Array<string>): Promise<void> => {
+        if (message.channel.type !== ChannelType.DM) {
             if (message.deletable) {
                 try {
                     await message.delete();
@@ -61,20 +61,23 @@ export default class Newsletter implements ICommand {
         await this.subCommands.get(subCommand)!(message, args);
     }
 
-    private helpHandler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
-        const embed = new Discord.MessageEmbed()
+    private helpHandler = async (message: Message): Promise<void> => {
+        const embed = new EmbedBuilder()
             .setTitle(Config.botName)
             .setDescription("Plex Newsletter commands.")
-            .addField(Config.commandPrefix + "plex-newsletter help", "View this help topic")
-            .addField(Config.commandPrefix + "plex-newsletter subscribe {email}", "Subscribe to the plex newsletter with the provided email.")
-            .addField(Config.commandPrefix + "plex-newsletter unsubscribe {email}", "Unsubscribe from the plex newsletter.")
+            .addFields(
+                { name: Config.commandPrefix + "plex-newsletter help", value: "View this help topic" },
+                { name: Config.commandPrefix + "plex-newsletter subscribe {email}", value: "Subscribe to the plex newsletter with the provided email." },
+                { name: Config.commandPrefix + "plex-newsletter unsubscribe {email}", value: "Unsubscribe from the plex newsletter." })
             .setTimestamp()
-            .setFooter("This was more work than I thought. -Franchyze");
+            .setFooter({
+                text: "This was more work than I thought. -Franchyze"
+            });
 
-        await message.channel.send(embed);
+        await message.reply({ embeds: [embed] });
     }
 
-    private subscribeHandler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
+    private subscribeHandler = async (message: Message, args: Array<string>): Promise<void> => {
         if (args.length < 1 || args.length > 2) {
             await this.invalidMessage(message);
             return;
@@ -93,16 +96,16 @@ export default class Newsletter implements ICommand {
             const mailgunStatus = await this.mailgunService.checkIfSubscribed(email);
 
             if (mailgunStatus) {
-                await message.channel.send("It looks like the email is already subscribed. Please contact Franchyze#9084 if you are not receiving the newsletter.");
+                await message.reply("It looks like the email is already subscribed. Please contact Franchyze#9084 if you are not receiving the newsletter.");
                 return;
             }
 
             switch (status) {
                 case InvitationDBStatus.TooManyAttempts:
-                    await message.channel.send("Sorry, there have been too many attempts to add that email address. Please contact Franchyze#9084 for more information.");
+                    await message.reply("Sorry, there have been too many attempts to add that email address. Please contact Franchyze#9084 for more information.");
                     return;
                 case InvitationDBStatus.Subscribed:
-                    await message.channel.send("It looks like the email is already subscribed. Please contact Franchyze#9084 if you are not receiving the newsletter.");
+                    await message.reply("It looks like the email is already subscribed. Please contact Franchyze#9084 if you are not receiving the newsletter.");
                     return;
                 case InvitationDBStatus.Unsubscribed:
                     await this.performSubscribe(message, email);
@@ -115,7 +118,7 @@ export default class Newsletter implements ICommand {
             }            
         } else {
             if (status !== InvitationDBStatus.Unredeemed && status !== InvitationDBStatus.TooManyAttempts) {
-                await message.channel.send("This email is not currently pending. Please contact Franchyze#9084 if you believe this to be an error.");
+                await message.reply("This email is not currently pending. Please contact Franchyze#9084 if you believe this to be an error.");
                 return;
             }
 
@@ -129,12 +132,12 @@ export default class Newsletter implements ICommand {
             
 
             if (otp !== pendingInvite.otp) {
-                await message.channel.send("The submitted code is not valid. Please send the code exactly as it appears in the email.");
+                await message.reply("The submitted code is not valid. Please send the code exactly as it appears in the email.");
                 return;
             }
 
             if (pendingInvite.inviteExpirationTime && new Date() > pendingInvite.inviteExpirationTime) {
-                await message.channel.send(`This code is expired. Please try again with \`${Config.commandPrefix}plex-newsletter subscribe ${email}\``);
+                await message.reply(`This code is expired. Please try again with \`${Config.commandPrefix}plex-newsletter subscribe ${email}\``);
                 return;
             }
 
@@ -142,7 +145,7 @@ export default class Newsletter implements ICommand {
         }
     }
 
-    private unsubscribeHandler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
+    private unsubscribeHandler = async (message: Message, args: Array<string>): Promise<void> => {
         if (args.length !== 1) {
             await this.invalidMessage(message);
             return;
@@ -155,7 +158,7 @@ export default class Newsletter implements ICommand {
 
         if (status !== InvitationDBStatus.Subscribed && !mailgunStatus) {
             // User is not subscribed
-            message.channel.send("You are not currently subscribed.");
+            message.reply("You are not currently subscribed.");
             return;
         }
 
@@ -167,14 +170,14 @@ export default class Newsletter implements ICommand {
             await this.dbService.updateSubscription(email, false);
         }
 
-        message.channel.send("Unsubscribed successfully.");
+        message.reply("Unsubscribed successfully.");
     }
 
-    private invalidMessage = async (message: Discord.Message) => {
-        await message.channel.send("Sorry, that was not a valid command.");
+    private invalidMessage = async (message: Message) => {
+        await message.reply("Sorry, that was not a valid command.");
     }
 
-    private performSubscribe = async (message: Discord.Message, email: string, isRedeem: boolean = false) => {
+    private performSubscribe = async (message: Message, email: string, isRedeem: boolean = false) => {
         // 2. Add to mailing list.
         await this.mailgunService.subscribe(email);
         // 3. Set as subscribed in DB.
@@ -184,10 +187,10 @@ export default class Newsletter implements ICommand {
             await this.dbService.updateSubscription(email, true);
         }
         // 4. Send message.
-        await message.channel.send("Successfully subscribed to the newsletter. Thanks :)");
+        await message.reply("Successfully subscribed to the newsletter. Thanks :)");
     }
 
-    private performInvite = async (message: Discord.Message, email: string) => {
+    private performInvite = async (message: Message, email: string) => {
         // 2. Generate OTP
         const otp = otpGenerator.generate(6, { upperCase: true, specialChars: false, digits: false, alphabets: false});
 
@@ -198,7 +201,7 @@ export default class Newsletter implements ICommand {
         await this.dbService.createInvitation(email, otp, this.addDays(new Date(), 1));
         
         // 5. Send message
-        await message.channel.send("Sent an invitation email. Please check your email and run the command you receive. Thanks :)");
+        await message.reply("Sent an invitation email. Please check your email and run the command you receive. Thanks :)");
     }
 
     private addDays(date: Date, days: number) {

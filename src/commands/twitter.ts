@@ -1,22 +1,14 @@
-import Discord from "discord.js";
-import winston from "winston";
-import youtubedl from "youtube-dl-exec";
-import fs from "fs";
+import { Message } from "discord.js";
 import getUrls from 'get-urls';
-import path from "path";
 import ICommand from "../command.interface.js";
+import { URL } from "url";
 
 export default class Twitter implements ICommand {
     public commandCode: string = "tw";
     public description: string = "";
     public allowInline: boolean = true;
-
-    constructor(private logger: winston.Logger)
-    {
-
-    }
     
-    public handler =  async (message: Discord.Message, args: Array<string>): Promise<void> => {
+    public handler =  async (message: Message, args: Array<string>): Promise<void> => {
         if (!args || !args.length) {
             return;
         }
@@ -41,11 +33,12 @@ export default class Twitter implements ICommand {
         await Promise.all(tasks)
     }
 
-    private doVxTwitter = async (url: string, message: Discord.Message): Promise<void> => {
+    private doVxTwitter = async (url: string, message: Message): Promise<void> => {
         const vxUrl = url
             .replace("twitter.com", "vxtwitter.com")
             .replace("x.com", "vxtwitter.com");
 
         await message.reply(vxUrl);
+        await message.suppressEmbeds(true);
     }
 }

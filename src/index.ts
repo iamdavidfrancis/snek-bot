@@ -1,27 +1,53 @@
-import Discord, { TextChannel } from "discord.js";
-import winston, { debug } from "winston";
+import { 
+    ActivityType,
+    AuditLogEvent,
+    ChannelType,
+    Client,
+    DMChannel,
+    Events,
+    GatewayIntentBits,
+    Message,
+    NonThreadGuildBasedChannel,
+    OmitPartialGroupDMChannel,
+    Partials,
+    TextChannel,
+} from "discord.js";
+
+import winston from "winston";
 import cron from 'node-cron';
 import path from "path";
 
 import Config from "./config.js";
 import Messages from "./messages.js";
 // import ytdl  from 'ytdl-core';
-import TikTok from "./commands/tiktok.js";
 import Twitter from "./commands/twitter.js";
 
 import RedditVideo from "./commands/reddit-video.js";
 
+// const DIMMA_VOICE = "704098346343858386";
+// const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3";
+// const DIMMA_YOUTUBE = "https://www.youtube.com/watch?v=SBxpeuxUiOA";
 
-const DIMMA_VOICE = "704098346343858386";
-const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3";
-const DIMMA_YOUTUBE = "https://www.youtube.com/watch?v=SBxpeuxUiOA";
+const generalChannelId = '1018609613320499321';
+const healthChannelId = '744712254188159017';
 
 class Main {
     private logger: winston.Logger;
-    private client: Discord.Client = new Discord.Client();
+    private client: Client = new Client({
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.GuildMessageReactions,
+            GatewayIntentBits.MessageContent,
+            GatewayIntentBits.GuildVoiceStates,
+        ],
+        partials: [
+            Partials.Channel,
+            Partials.Message,
+            Partials.Reaction
+        ]
+    });
     private messages: Messages;
-    private connection?: Discord.VoiceConnection;
-    private tikTok: TikTok;
     private twitter: Twitter;
     private redditVideo: RedditVideo;
 
@@ -38,8 +64,7 @@ class Main {
 
         this.initializeDiscord();
 
-        this.tikTok = new TikTok(this.logger);
-        this.twitter = new Twitter(this.logger);
+        this.twitter = new Twitter();
         this.redditVideo = new RedditVideo(this.logger);
     }
 
@@ -48,26 +73,26 @@ class Main {
     }
 
     private initializeDiscord(): void {
-        this.client.once<'ready'>('ready', this.readyHandler);
-        this.client.on<'message'>('message', this.messageHandler);
-        this.client.on<'channelDelete'>('channelDelete', this.channelDeleteHandler);
+        this.client.once<Events.ClientReady>(Events.ClientReady, this.readyHandler);
+        this.client.on<Events.MessageCreate>(Events.MessageCreate, this.messageHandler);
+        this.client.on<Events.ChannelDelete>(Events.ChannelDelete, this.channelDeleteHandler);
     }
 
-    private channelDeleteHandler = async (channel: Discord.Channel | Discord.PartialDMChannel) => {
+    private channelDeleteHandler = async (channel: DMChannel | NonThreadGuildBasedChannel) => {
         this.logger.info(JSON.stringify(channel, null, '\t'));
-        if (channel.type == "text") {
-            const textChannel = channel as Discord.TextChannel;
+        if (channel.type == ChannelType.GuildText) {
+            const textChannel = channel as TextChannel;
 
             const guild = await textChannel.guild.fetch();
 
-            const auditLogs = await guild.fetchAuditLogs({ type: Discord.GuildAuditLogs.Actions.CHANNEL_DELETE });
+            const auditLogs = await guild.fetchAuditLogs({ type: AuditLogEvent.ChannelDelete });
 
             const auditEntry = auditLogs.entries.find(a => (a && a.target && (a.target as any).id) === textChannel.id);
 
             const announceChannel = guild.channels.cache.find(c => c.name == "announcements");
 
             let message: string;
-            if (auditEntry) {
+            if (auditEntry && auditEntry.executor) {
                 const initiator = auditEntry.executor.id;
     
                 message = `What the fuck, <@!${initiator}>? You just deleted #${textChannel.name}!`;
@@ -89,7 +114,7 @@ class Main {
         }
         else {
             this.logger.info(`Logged in as: ${this.client.user.tag}.`);
-            this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: 'LISTENING'});
+            this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: ActivityType.Listening });
 
             cron.schedule('30 00 * * 6', async () => {
                 await this.sendFile(`the-weekend.mp4`);
@@ -110,7 +135,7 @@ class Main {
             });
 
             cron.schedule('0 9 8 11 *', async () => {
-                const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
+                const channel = this.client.channels.cache.get(generalChannelId) as TextChannel | undefined;
                 if (channel) {
                     await channel.send({
                         content: "It's November 8th.\nhttps://www.youtube.com/watch?v=_zUh7tWXK1I",
@@ -119,14 +144,18 @@ class Main {
             })
 
             cron.schedule('00 09 * * *', async () => {
-                const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
+                const channel = this.client.channels.cache.get(generalChannelId) as TextChannel | undefined;
                 if (channel) {
+                    const thread = channel.threads.cache.get(healthChannelId);
+
+                    const postTo = thread || channel;
+
                     const videos = ['drugs.mp4', 'pills.mp4', 'pills2.mov'];
 
                     const file = videos.at(Math.floor(videos.length * Math.random())) || 'drugs.mp4';
 
                     const fileName = path.join('videos', file);
-                    await channel.send({
+                    await postTo.send({
                         content: "Hey <@&967801221031272498>, don't forget to take your meds today!",
                         files: [fileName]
                     })
@@ -146,8 +175,8 @@ class Main {
         }
     }
 
-    private sendFile = async (filename: string): Promise<void> => {
-        const channel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
+    private sendFile = async (filename: string, channelId: string = generalChannelId): Promise<void> => {
+        const channel = this.client.channels.cache.get(channelId) as TextChannel | undefined;
         if (channel) {
             const fileName = path.join('videos', filename);
             await channel.send({
@@ -156,7 +185,7 @@ class Main {
         }
     }
 
-    private messageHandler = async (message: Discord.Message): Promise<void> => {
+    private messageHandler = async (message: OmitPartialGroupDMChannel<Message<boolean>>): Promise<void> => {
         // Don't handle messages from bots.
         if (message.author.bot) {
             return;
@@ -201,7 +230,10 @@ class Main {
             // }
 
             if (message.content.indexOf("Fuck you, robot") >= 0) {
-                await message.reply("No, fuck you.", { files: ["https://i.imgur.com/84MOMYV.png"]});
+                await message.reply({
+                    content: "No, fuck you.",
+                    files: ["https://i.imgur.com/84MOMYV.png"]
+                });
             }
 
             // Don't actually send a reply as other bots can use this prefix as well.

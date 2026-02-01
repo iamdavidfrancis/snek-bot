@@ -1,6 +1,6 @@
 import Config from "../config.js";
 
-import axios, { AxiosRequestConfig, AxiosBasicCredentials, AxiosInstance } from "axios";
+import axios, { AxiosBasicCredentials, AxiosInstance } from "axios";
 
 import formData from 'form-data';
 import Mailgun from 'mailgun.js';

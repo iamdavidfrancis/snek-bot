@@ -1,17 +1,7 @@
-import Discord from "discord.js";
-import Config from "../config.js"
-import winston from "winston";
+import { Message } from "discord.js";
 import ICommand from "../command.interface.js";
 import DBService from "../services/db-service.js";
 import ServiceFactory from "../services/serviceFactory.js";
-
-
-
-interface Results {
-    numDice: number;
-    diceSides: number;
-    diceResults: Array<number>
-}
 
 export default class WhoIs implements ICommand {
     private dbService: DBService = ServiceFactory.DBServiceInstance;
@@ -19,7 +9,7 @@ export default class WhoIs implements ICommand {
     public commandCode: string = "whois";
     description: string = "Figure out who is who in this server.";
     usage?: string | undefined;
-    handler: (message: Discord.Message, args: string[]) => Promise<void> = async (message, args) => {
+    handler: (message: Message, args: string[]) => Promise<void> = async (message, args) => {
         if (!args || args.length === 0) {
             await message.reply("Invalid arguments.");
             return;

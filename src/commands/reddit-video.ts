@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import { Message } from "discord.js";
 import winston from "winston";
 import youtubedl from "youtube-dl-exec";
 import fs from "fs";
@@ -7,19 +7,21 @@ import getUrls from 'get-urls';
 import ICommand from "../command.interface.js";
 import { URL } from "url";
 
-const downloadParams = ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(title)s-%(id)s.%(ext)s"];
+// const downloadParams = ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(title)s-%(id)s.%(ext)s"];
 
 export default class RedditVideo implements ICommand {
     public commandCode: string = "tt";
     public description: string = "";
     public allowInline: boolean = true;
 
-    constructor(private logger: winston.Logger)
-    {
+    private logger: winston.Logger;
 
+    constructor(logger: winston.Logger)
+    {
+        this.logger = logger;
     }
     
-    public handler =  async (message: Discord.Message, args: Array<string>): Promise<void> => {
+    public handler =  async (message: Message, args: Array<string>): Promise<void> => {
         if (!args || !args.length) {
             return;
         }
@@ -45,7 +47,7 @@ export default class RedditVideo implements ICommand {
         await Promise.all(tasks)
     }
 
-    private doVideo = async (url: string, message: Discord.Message): Promise<void> => {
+    private doVideo = async (url: string, message: Message): Promise<void> => {
         try {
             let filename = await this.getFilename(url);
 
@@ -78,7 +80,7 @@ export default class RedditVideo implements ICommand {
         await youtubedl(url, { format: "bestvideo+bestaudio/best", output: "videos/%(title)s-%(id)s.%(ext)s" });
     }
 
-    private uploadToDiscord = async (filename: string, message: Discord.Message): Promise<void> => {
+    private uploadToDiscord = async (filename: string, message: Message): Promise<void> => {
         this.logger.info("Uploading to Discord: " + filename);
 
         try {

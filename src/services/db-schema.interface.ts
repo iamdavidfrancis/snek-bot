@@ -11,16 +11,16 @@ export interface SnekMember {
 export interface IPendingInvite {
     email: string;
     otp: string;
-    inviteSentTime?: Date;
-    inviteExpirationTime?: Date;
+    inviteSentTime?: Date | undefined;
+    inviteExpirationTime: Date | undefined;
     inviteSendCount: number;
-    redeemed?: boolean;
+    redeemed?: boolean | undefined;
     subscribed?: boolean;
 }
 
 export interface ICustomCommand {
     commandCode: string;
-    description?: string;
+    description?: string | undefined;
     respondText: string;
-    approved?: boolean;
+    approved?: boolean | undefined;
 }

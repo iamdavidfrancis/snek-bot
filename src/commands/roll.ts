@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import { Message, EmbedBuilder } from "discord.js";
 import Config from "../config.js"
 import winston from "winston";
 import ICommand from "../command.interface.js";
@@ -15,18 +15,20 @@ export default class DiceRoller implements ICommand {
     public usage: string = `${Config.commandPrefix}${this.commandCode} 4d8 2d10 11d20`;
     public allowInline: boolean = true;
 
-    private errorEmbed = this.buildEmbedBoilerplate().addField("Dice Roller Error", "Something went wrong with your command. Please make sure all dice rolls are in the format `XdY`.");
+    private errorEmbed = this.buildEmbedBoilerplate().addFields({ name: "Dice Roller Error", value: "Something went wrong with your command. Please make sure all dice rolls are in the format `XdY`." });
 
-    constructor(private logger: winston.Logger)
+    private logger: winston.Logger;
+
+    constructor(logger: winston.Logger)
     {
-
+        this.logger = logger;
     }
 
-    public handler = async (message: Discord.Message, args: Array<string>): Promise<void> => {
+    public handler = async (message: Message, args: Array<string>): Promise<void> => {
         const results = this.rollHandler(args);
 
         if (results == null) {
-            await message.channel.send(this.errorEmbed);
+            await message.reply({ embeds: [this.errorEmbed] });
             return;
         }
 
@@ -58,7 +60,7 @@ export default class DiceRoller implements ICommand {
             totalSum += sum;
             resultString += `${sum}`
 
-            returnValue.addField(`${element.numDice}d${element.diceSides} Results:`, resultString);
+            returnValue.addFields({ name: `${element.numDice}d${element.diceSides} Results:`, value: resultString });
         });
 
         let finalString;
@@ -70,14 +72,14 @@ export default class DiceRoller implements ICommand {
             finalString = totalSum;
         }
 
-        returnValue.addField("Total Dice Roll", finalString);
+        returnValue.addFields({ name: "Total Dice Roll", value: `${finalString}` });
 
         // Send the message
-        await message.channel.send(returnValue);
+        await message.reply({ embeds: [returnValue] });
     }
 
-    private buildEmbedBoilerplate(): Discord.MessageEmbed {
-        return new Discord.MessageEmbed()
+    private buildEmbedBoilerplate(): EmbedBuilder {
+        return new EmbedBuilder ()
             .setTitle(Config.botName)
             .setDescription("Dice roll result");
     }
@@ -91,7 +93,7 @@ export default class DiceRoller implements ICommand {
 
             if (result == null) {
                 error = true;
-                return null;
+                return;
             }
 
             results.push(result);
