@@ -13,8 +13,10 @@ import IAm from './commands/iam.js';
 
 export default class Messages {
     private commands = new Collection<string, ICommand>();
+    private logger: winston.Logger;
 
-    constructor(private logger: winston.Logger) {
+    constructor(logger: winston.Logger) {
+        this.logger = logger;
         var commands: Array<ICommand> = [
             {
                 commandCode: Config.helpCommand,
