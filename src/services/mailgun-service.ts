@@ -21,7 +21,7 @@ export default class MailgunService {
       password: Config.mailgunApiKey,
     };
 
-    this.axios = (axios as any).create({
+    this.axios = axios.create({
       auth,
       baseURL: 'https://api.mailgun.net/v3/',
       timeout: 1_000,

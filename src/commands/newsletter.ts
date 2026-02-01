@@ -213,7 +213,7 @@ export default class Newsletter implements ICommand {
 
   private readonly performInvite = async (message: Message, email: string) => {
     // 2. Generate OTP
-    const otp = otpGenerator.generate(6, { upperCase: true, specialChars: false, digits: false, alphabets: false });
+    const otp = otpGenerator.generate(6, { upperCaseAlphabets: true, specialChars: false, digits: false, lowerCaseAlphabets: false });
 
     // 3. Send Email with OTP
     await this.mailgunService.sendInvitationEmail(email, otp);
