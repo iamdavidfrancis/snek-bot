@@ -30,6 +30,7 @@ import RedditVideo from "./commands/reddit-video.js";
 
 const generalChannelId = '1018609613320499321';
 const healthChannelId = '744712254188159017';
+const healthThreadId = '1467559066623672434';
 
 class Main {
     private logger: winston.Logger;
@@ -144,9 +145,9 @@ class Main {
             })
 
             cron.schedule('00 09 * * *', async () => {
-                const channel = this.client.channels.cache.get(generalChannelId) as TextChannel | undefined;
+                const channel = this.client.channels.cache.get(healthChannelId) as TextChannel | undefined;
                 if (channel) {
-                    const thread = channel.threads.cache.get(healthChannelId);
+                    const thread = channel.threads.cache.get(healthThreadId);
 
                     const postTo = thread || channel;
 

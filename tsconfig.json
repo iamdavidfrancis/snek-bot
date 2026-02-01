@@ -1,16 +1,18 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig.json",
-	"extends": ["@sapphire/ts-config", "@sapphire/ts-config/extra-strict"],
-	"compilerOptions": {
-		"allowImportingTsExtensions": true,
-		"erasableSyntaxOnly": false,
+  "compilerOptions": {
+    // "allowImportingTsExtensions": true,
 		"declaration": false,
 		"declarationMap": false,
 		"incremental": false,
 		"module": "ESNext",
 		"moduleResolution": "Bundler",
-		"noEmit": true,
+		// "noEmit": true,
 		"target": "ESNext",
-		"skipLibCheck": true
-	}
+		"skipLibCheck": true,
+
+    // Mine
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": ".",
+  }
 }
