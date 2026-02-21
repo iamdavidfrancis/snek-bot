@@ -19,31 +19,20 @@ import {
   Partials
 } from 'discord.js';
 import { Settings } from 'luxon';
-import cron from 'node-cron';
 import winston from 'winston';
 import RedditVideo from './commands/reddit-video.js';
 import Twitter from './commands/twitter.js';
 import type { Command } from './commands-v2/models/Command.js';
 import Config from './config.js';
 import Messages from './messages.js';
-import type DBService from './services/db-service.js';
-import ServiceFactory from './services/serviceFactory.js';
+import CronService from './utils/cron.js';
 import { getItems } from './utils/file-utils.js';
-// import ytdl  from 'ytdl-core';
-
-// const DIMMA_VOICE = "704098346343858386";
-// const DIMMA_FILE = "/usr/src/APP/dimmadome.mp3";
-// const DIMMA_YOUTUBE = "https://www.youtube.com/watch?v=SBxpeuxUiOA";
 
 const generalChannelId = '1018609613320499321';
-const healthChannelId = '744712254188159017';
-const healthThreadId = '1467559066623672434';
 
 class Main {
   private readonly logger: winston.Logger;
   
-  private dbService: DBService = ServiceFactory.DBServiceInstance;
-
   private commands = new Collection<string, Command>()
 
   private client: Client = new Client({
@@ -63,6 +52,8 @@ class Main {
 
   private readonly redditVideo: RedditVideo;
 
+  private readonly cronService: CronService;
+
   public constructor() {
     this.logger = winston.createLogger({
       level: 'debug',
@@ -76,6 +67,7 @@ class Main {
 
     this.twitter = new Twitter();
     this.redditVideo = new RedditVideo(this.logger);
+    this.cronService = new CronService(this.client);
   }
 
   public async start() {
@@ -182,89 +174,9 @@ class Main {
       this.logger.info(`Logged in as: ${this.client.user.tag}.`);
       this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: ActivityType.Listening });
 
-      cron.schedule('30 00 * * 6', async () => {
-        await this.sendFile(`the-weekend.mp4`);
-      });
-
-      cron.schedule('30 12 * * 3', async () => {
-        await this.sendFile(`itiswednesdaymydudescampfire.mp4`);
-      });
-
-      // Post the Mean Girls / FMA meme on 10/3
-      cron.schedule('30 12 3 10 *', async () => {
-        await this.sendFile(`oct3.jpg`);
-      });
-
-      // Fuck Columbus
-      cron.schedule('30 12 8-14 10 1', async () => {
-        await this.sendFile(`columbus.jpg`);
-      });
-
-      cron.schedule('0 9 8 11 *', async () => {
-        const channel = this.client.channels.cache.get(generalChannelId) as TextChannel | undefined;
-        if (channel) {
-          await channel.send({
-            content: "It's November 8th.\nhttps://www.youtube.com/watch?v=_zUh7tWXK1I",
-          });
-        }
-      });
-
-      cron.schedule('00 09 * * *', async () => {
-        const channel = this.client.channels.cache.get(healthChannelId) as TextChannel | undefined;
-        if (channel) {
-          const thread = channel.threads.cache.get(healthThreadId);
-
-          const postTo = thread ?? channel;
-
-          const videos = ['drugs.mp4', 'pills.mp4', 'pills2.mov'];
-
-          const file = videos.at(Math.floor(videos.length * Math.random())) ?? 'drugs.mp4';
-
-          const fileName = path.join('videos', file);
-          await postTo.send({
-            content: "Hey <@&967801221031272498>, don't forget to take your meds today!",
-            files: [fileName],
-          });
-        }
-      });
-
-      cron.schedule('0 13 * * *', async () => {
-        // Birthday posts
-        const birthdays = await this.dbService.getBirthdaysForToday();
-
-        if (birthdays.length > 0) {
-          const channel = this.client.channels.cache.get(generalChannelId) as TextChannel | undefined;
-
-          if (channel) {
-            const mentions = birthdays.map((b) => `<@${b.userid}>`).join(', ');
-
-            await channel.send({
-              content: `Happy birthday, ${mentions}! 🎉🎂`,
-            });
-          }
-        }
-      });
-
-      /* cron.schedule('00 21 * * 2', async () => {
-                let testChannel = this.client.channels.cache.get('1018609613320499321') as Discord.TextChannel | undefined;
-                if (testChannel) {
-                    await testChannel.send({
-                        content: '<@&618503327474515969> Who\'s in for trivia tomorrow night?\n:thumbsup:: Yes\n:wave:: Maybe\n:thumbsdown:: No',
-                    });
-                }
-            }); // */
+      this.cronService.scheduleTasks();
     } else {
       this.logger.error('The current user is not defined!');
-    }
-  };
-
-  private readonly sendFile = async (filename: string, channelId: string = generalChannelId): Promise<void> => {
-    const channel = this.client.channels.cache.get(channelId) as TextChannel | undefined;
-    if (channel) {
-      const fileName = path.join('videos', filename);
-      await channel.send({
-        files: [fileName],
-      });
     }
   };
 
