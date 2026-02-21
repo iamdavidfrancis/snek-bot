@@ -28,6 +28,7 @@ import Config from './config.js';
 import Messages from './messages.js';
 import type DBService from './services/db-service.js';
 import ServiceFactory from './services/serviceFactory.js';
+import { Settings } from 'luxon';
 // import ytdl  from 'ytdl-core';
 
 // const DIMMA_VOICE = "704098346343858386";
@@ -333,6 +334,8 @@ class Main {
     await this.messages.handleCommand(message, cmd, args);
   };
 }
+
+Settings.defaultZone = "America/New_York";
 
 // Run the app
 const app = new Main();
