@@ -62,6 +62,17 @@ export default class DBService {
     return this.db.data?.birthdays.find((b) => b.userid === userid);
   };
 
+  public removeBirthdayForUser = async (userid: string): Promise<void> => {
+    await this.initializeGuard();
+
+    const index = this.db.data?.birthdays.findIndex((b) => b.userid === userid);
+
+    if (index !== undefined && index !== -1) {
+      this.db.data?.birthdays.splice(index, 1);
+      await this.db.write();
+    }
+  };
+
   public getBirthdaysForMonth = async (month: number): Promise<IBirthday[]> => {
     await this.initializeGuard();
 
