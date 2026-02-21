@@ -32,6 +32,7 @@
     "minimist": "^1.2.6",
     "node-cron": "^3.0.0",
     "otp-generator": "^4.0.1",
+    "require-all": "^3.0.0",
     "winston": "^3.7.2",
     "youtube-dl-exec": "^2.0.11"
   },
@@ -44,6 +45,7 @@
     "@types/node": "^25.2.0",
     "@types/node-cron": "^3.0.11",
     "@types/otp-generator": "^4.0.2",
+    "@types/require-all": "^3.0.6",
     "@types/ws": "^7.2.3",
     "@types/youtube-dl": "^1.12.2",
     "eslint": "^9.39.2",

@@ -18,17 +18,17 @@ import {
   MessageFlags,
   Partials
 } from 'discord.js';
+import { Settings } from 'luxon';
 import cron from 'node-cron';
 import winston from 'winston';
 import RedditVideo from './commands/reddit-video.js';
 import Twitter from './commands/twitter.js';
-import Birthday from './commands-v2/commands/Birthday.js';
 import type { Command } from './commands-v2/models/Command.js';
 import Config from './config.js';
 import Messages from './messages.js';
 import type DBService from './services/db-service.js';
 import ServiceFactory from './services/serviceFactory.js';
-import { Settings } from 'luxon';
+import { getItems } from './utils/file-utils.js';
 // import ytdl  from 'ytdl-core';
 
 // const DIMMA_VOICE = "704098346343858386";
@@ -92,19 +92,20 @@ class Main {
   }
 
   private resolveV2Commands(): void {
-    const initialCommands: Command[] = [
-      Birthday
-    ];
-
-    for (const command of initialCommands) {
+    const commands: Command[] = getItems<Command>(path.join('commands-v2', 'commands'), command => {
       if (command.disabled) {
-        continue;
+        return false;
       }
 
       if (command.permissions) {
         command.builder.setDefaultMemberPermissions(command.permissions);
       }
 
+      return true;
+    });
+
+    for (const command of commands) {
+      console.log(`Registering command: ${command.builder.name}`);
       this.commands.set(command.builder.name, command);
     }
   }

@@ -79,6 +79,12 @@ export default class DBService {
     return this.db.data?.birthdays.filter((b) => b.month === month) ?? [];
   };
 
+  public getAllBirthdays = async (): Promise<IBirthday[]> => {
+    await this.initializeGuard();
+
+    return this.db.data?.birthdays ?? [];
+  };
+
   public getBirthdaysForToday = async (): Promise<IBirthday[]> => {
     await this.initializeGuard();
 
