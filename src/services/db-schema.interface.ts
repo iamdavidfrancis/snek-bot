@@ -1,4 +1,5 @@
 export default interface IDBSchema {
+  birthdays: IBirthday[];
   pendingInvites: IPendingInvite[];
   users: SnekMember[];
 }
@@ -23,4 +24,10 @@ export interface ICustomCommand {
   commandCode: string;
   description?: string | undefined;
   respondText: string;
+}
+
+export interface IBirthday {
+  day: number;
+  month: number;
+  userid: string;
 }

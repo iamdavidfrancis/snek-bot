@@ -1,6 +1,8 @@
 import path from 'node:path';
 import type {
   DMChannel,
+  GuildTextBasedChannel,
+  Interaction,
   Message,
   NonThreadGuildBasedChannel,
   OmitPartialGroupDMChannel,
@@ -10,16 +12,23 @@ import {
   AuditLogEvent,
   ChannelType,
   Client,
+  Collection,
   Events,
   GatewayIntentBits,
+  MessageFlags,
   Partials
 } from 'discord.js';
 import cron from 'node-cron';
 import winston from 'winston';
 import RedditVideo from './commands/reddit-video.js';
 import Twitter from './commands/twitter.js';
+import SetBirthday from './commands-v2/commands/SetBirthday.js';
+import type { Command } from './commands-v2/models/Command.js';
 import Config from './config.js';
 import Messages from './messages.js';
+import type DBService from './services/db-service.js';
+import ServiceFactory from './services/serviceFactory.js';
+import GetBirthday from './commands-v2/commands/GetBirthday.js';
 // import ytdl  from 'ytdl-core';
 
 // const DIMMA_VOICE = "704098346343858386";
@@ -32,6 +41,10 @@ const healthThreadId = '1467559066623672434';
 
 class Main {
   private readonly logger: winston.Logger;
+  
+  private dbService: DBService = ServiceFactory.DBServiceInstance;
+
+  private commands = new Collection<string, Command>()
 
   private client: Client = new Client({
     intents: [
@@ -73,6 +86,40 @@ class Main {
     this.client.once<Events.ClientReady>(Events.ClientReady, this.readyHandler);
     this.client.on<Events.MessageCreate>(Events.MessageCreate, this.messageHandler);
     this.client.on<Events.ChannelDelete>(Events.ChannelDelete, this.channelDeleteHandler);
+    this.client.on<Events.InteractionCreate>(Events.InteractionCreate, this.interactionHandler);
+
+    this.resolveV2Commands();
+  }
+
+  private resolveV2Commands(): void {
+    const initialCommands: Command[] = [
+      SetBirthday,
+      GetBirthday,
+    ];
+
+    for (const command of initialCommands) {
+      if (command.disabled) {
+        continue;
+      }
+
+      if (command.permissions) {
+        command.builder.setDefaultMemberPermissions(command.permissions);
+      }
+
+      this.commands.set(command.builder.name, command);
+    }
+  }
+
+  private readonly deployCommands = async (): Promise<void> => {
+    const commandJson = this.commands.map((command) => command.builder.toJSON());
+
+    const channel = this.client.channels.cache.get(generalChannelId) as GuildTextBasedChannel | undefined;
+    
+    if (channel) {
+      const guild = await channel.guild.fetch();
+
+      await guild.commands.set(commandJson);
+    }
   }
 
   private readonly channelDeleteHandler = async (channel: DMChannel | NonThreadGuildBasedChannel) => {
@@ -103,8 +150,33 @@ class Main {
     }
   };
 
+  private readonly interactionHandler = async (interaction: Interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = this.commands.get(interaction.commandName);
+
+    if (!command) {
+      console.error(`No command matching ${interaction.commandName} was found.`);
+      return;
+    }
+
+    try {
+      await command.run({ client: this.client, interaction });
+    } catch (error) {
+      console.error(`Error executing command ${interaction.commandName}:`, error);
+      
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+      } else {
+        await interaction.reply({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
+      }
+    }
+  }
+
   private readonly readyHandler = async () => {
     this.logger.info('Connected');
+
+    await this.deployCommands();
 
     if (this.client.user) {
       this.logger.info(`Logged in as: ${this.client.user.tag}.`);
@@ -153,6 +225,23 @@ class Main {
             content: "Hey <@&967801221031272498>, don't forget to take your meds today!",
             files: [fileName],
           });
+        }
+      });
+
+      cron.schedule('0 13 * * *', async () => {
+        // Birthday posts
+        const birthdays = await this.dbService.getBirthdaysForToday();
+
+        if (birthdays.length > 0) {
+          const channel = this.client.channels.cache.get(generalChannelId) as TextChannel | undefined;
+
+          if (channel) {
+            const mentions = birthdays.map((b) => `<@${b.userid}>`).join(', ');
+
+            await channel.send({
+              content: `Happy birthday, ${mentions}! 🎉🎂`,
+            });
+          }
         }
       });
 

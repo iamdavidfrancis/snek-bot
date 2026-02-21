@@ -1,6 +1,7 @@
 import { Low, JSONFile } from 'lowdb';
+import { DateTime } from 'luxon';
 import Config from '../config.js';
-import type { IPendingInvite, SnekMember } from './db-schema.interface.js';
+import type { IBirthday, IPendingInvite, SnekMember } from './db-schema.interface.js';
 import type IDBSchema from './db-schema.interface.js';
 
 export enum InvitationDBStatus {
@@ -24,10 +25,58 @@ export default class DBService {
     await this.db.read();
 
     if (this.db.data?.users === null) {
-      this.db.data ??= { pendingInvites: [], users: [] };
+      this.db.data ??= { birthdays: [], pendingInvites: [], users: [] };
+      await this.db.write();
+    }
+
+    if (this.db.data!.birthdays === null) {
+      this.db.data!.birthdays = [];
       await this.db.write();
     }
   };
+
+  public setBirthday = async (userid: string, day: number, month: number): Promise<void> => {
+    await this.initializeGuard();
+
+    const existing = this.db.data?.birthdays.find((b) => b.userid === userid);
+
+    if (existing) {
+      existing.day = day;
+      existing.month = month;
+
+      await this.db.write();
+    } else {
+      this.db.data?.birthdays.push({
+        userid,
+        day,
+        month,
+      });
+
+      await this.db.write();
+    }
+  };
+
+  public getBirthdayForUser = async (userid: string): Promise<IBirthday | undefined> => {
+    await this.initializeGuard();
+
+    return this.db.data?.birthdays.find((b) => b.userid === userid);
+  };
+
+  public getBirthdaysForMonth = async (month: number): Promise<IBirthday[]> => {
+    await this.initializeGuard();
+
+    return this.db.data?.birthdays.filter((b) => b.month === month) ?? [];
+  };
+
+  public getBirthdaysForToday = async (): Promise<IBirthday[]> => {
+    await this.initializeGuard();
+
+    const today = DateTime.now().setZone('America/New_York');
+    const day = today.day;
+    const month = today.month;
+
+    return this.db.data?.birthdays.filter((b) => b.day === day && b.month === month) ?? [];
+  }
 
   public getSnekById = async (userid: string): Promise<SnekMember | undefined> => {
     await this.initializeGuard();
