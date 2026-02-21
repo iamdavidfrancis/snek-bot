@@ -28,7 +28,7 @@
     "lodash": "^4.17.23",
     "lowdb": "^7.0.1",
     "luxon": "^3.7.2",
-    "mailgun.js": "^3.3.2",
+    "mailgun.js": "^12.7.0",
     "minimist": "^1.2.6",
     "node-cron": "^3.0.0",
     "otp-generator": "^4.0.1",

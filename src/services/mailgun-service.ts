@@ -9,7 +9,7 @@ export default class MailgunService {
   private readonly axios: AxiosInstance;
 
   // private mg = mailgun({ apiKey: Config.mailgunApiKey, domain: Config.newsletterDomain });
-  private mailgun = new (Mailgun as any)(formData as any);
+  private mailgun = new Mailgun(formData);
 
   private mg = this.mailgun.client({ username: 'api', key: Config.mailgunApiKey });
 
@@ -72,6 +72,8 @@ export default class MailgunService {
       'h:X-Mailgun-Variables': JSON.stringify({ otp, to: email }),
     };
 
-    return this.mg.messages.create(Config.newsletterDomain, data);
+    const result = await this.mg.messages.create(Config.newsletterDomain, data);
+
+    return result.status < 400;
   }
 }
