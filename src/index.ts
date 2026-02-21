@@ -168,12 +168,11 @@ class Main {
   private readonly readyHandler = async () => {
     this.logger.info('Connected');
 
-    await this.deployCommands();
-
     if (this.client.user) {
       this.logger.info(`Logged in as: ${this.client.user.tag}.`);
       this.client.user.setActivity(`${Config.commandPrefix}${Config.helpCommand}`, { type: ActivityType.Listening });
 
+      await this.deployCommands();
       this.cronService.scheduleTasks();
     } else {
       this.logger.error('The current user is not defined!');
@@ -188,16 +187,6 @@ class Main {
 
     // Only handle commands with our prefix.
     if (message.content.slice(0, 1) !== Config.commandPrefix) {
-      // Custom tiktok link response.
-      // if (message.content.indexOf("tiktok.com/") >= 0) {
-      //     try {
-      //         await this.tikTok.handler(message, [message.content]);
-      //     } catch (e) {
-      //         // this.logger.error(e);
-      //         await message.reply("Fuck TikTok.");
-      //     }
-      // }
-
       if (message.content.includes('reddit.com/')) {
         try {
           await this.redditVideo.handler(message, [message.content]);
@@ -213,15 +202,6 @@ class Main {
           this.logger.error(error);
         }
       }
-
-      // if (message.content.indexOf("//twitter.com") >= 0) {
-      //     try {
-      //         await message.reply("Fuck twitter. At least use vxtwitter so the previews work.");
-
-      //     } catch (e) {
-      //         this.logger.error(e);
-      //     }
-      // }
 
       if (message.content.includes('Fuck you, robot')) {
         await message.reply({
