@@ -29,12 +29,12 @@
     "lowdb": "^7.0.1",
     "luxon": "^3.7.2",
     "mailgun.js": "^12.7.0",
-    "minimist": "^1.2.6",
+    "minimist": "^1.2.8",
     "node-cron": "^3.0.0",
     "otp-generator": "^4.0.1",
     "require-all": "^3.0.0",
-    "winston": "^3.7.2",
-    "youtube-dl-exec": "^2.0.11"
+    "winston": "^3.19.0",
+    "youtube-dl-exec": "^3.1.1"
   },
   "devDependencies": {
     "@sapphire/ts-config": "^5.0.3",

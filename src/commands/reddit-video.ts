@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import type { Message } from 'discord.js';
 import getUrls from 'get-urls';
 import type winston from 'winston';
-import youtubedl from 'youtube-dl-exec';
+import youtubedl, { Payload } from 'youtube-dl-exec';
 import type ICommand from '../command.interface.js';
 
 // const downloadParams = ["-f", "bestvideo+bestaudio/best", "-o", "videos/%(title)s-%(id)s.%(ext)s"];
@@ -76,7 +76,7 @@ export default class RedditVideo implements ICommand {
       output: 'videos/%(title)s-%(id)s.%(ext)s',
     });
 
-    return info._filename;
+    return (info as Payload).requested_downloads[0]._filename;
   };
 
   private readonly downloadVideo = async (url: string): Promise<void> => {
