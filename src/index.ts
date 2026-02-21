@@ -27,6 +27,7 @@ import Config from './config.js';
 import Messages from './messages.js';
 import CronService from './utils/cron.js';
 import { getItems } from './utils/file-utils.js';
+import getUrls from 'get-urls';
 
 const generalChannelId = '1018609613320499321';
 
@@ -187,19 +188,45 @@ class Main {
 
     // Only handle commands with our prefix.
     if (message.content.slice(0, 1) !== Config.commandPrefix) {
-      if (message.content.includes('reddit.com/')) {
-        try {
-          await this.redditVideo.handler(message, [message.content]);
-        } catch (error) {
-          this.logger.error(error);
-        }
-      }
+      const urlSet = getUrls(message.content, {
+        requireSchemeOrWww: true,
+        defaultProtocol: 'https',
+        normalizeProtocol: true,
+        forceHttps: true,
+      });
 
-      if (message.content.includes('twitter.com') || message.content.includes('x.com')) {
-        try {
-          await this.twitter.handler(message, [message.content]);
-        } catch (error) {
-          this.logger.error(error);
+      if (urlSet?.size > 0) {
+        let hasReddit = false;
+        let hasTwitter = false;
+
+        for(const url_ of urlSet) {
+          const url = new URL(url_);
+
+          if (url.hostname === "reddit.com" || url.hostname.endsWith(".reddit.com")) {
+            hasReddit = true;
+          }
+
+          if (url.hostname === "twitter.com" || url.hostname === "x.com" ||
+              url.hostname.endsWith(".twitter.com") || url.hostname.endsWith(".x.com")
+          ) {
+            hasTwitter = true;
+          }
+        }
+
+        if (hasReddit) {
+          try {
+            await this.redditVideo.handler(message, [message.content]);
+          } catch (error) {
+            this.logger.error(error);
+          }
+        }
+
+        if (hasTwitter) {
+          try {
+            await this.twitter.handler(message, [message.content]);
+          } catch (error) {
+            this.logger.error(error);
+          }
         }
       }
 
