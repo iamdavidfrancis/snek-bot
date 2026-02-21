@@ -1,4 +1,5 @@
-import { Low, JSONFile } from 'lowdb';
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
 import { DateTime } from 'luxon';
 import Config from '../config.js';
 import type { IBirthday, IPendingInvite, SnekMember } from './db-schema.interface.js';
@@ -19,8 +20,14 @@ export default class DBService {
   private db!: Low<IDBSchema>;
 
   public initialize = async () => {
+    const defaultData: IDBSchema = {
+      birthdays: [],
+      pendingInvites: [],
+      users: [],
+    };
+
     const adapter = new JSONFile<IDBSchema>(Config.databasePath);
-    this.db = new Low(adapter);
+    this.db = new Low(adapter, defaultData);
 
     await this.db.read();
 
