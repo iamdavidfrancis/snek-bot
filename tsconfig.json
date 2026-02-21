@@ -16,6 +16,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "baseUrl": ".",
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    
   }
 }
